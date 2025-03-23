@@ -2,8 +2,8 @@ import jwt from 'jsonwebtoken';
 import { User } from '../models/User';
 
 export class AuthService {
-  private static generateToken(userId: number): string {
-    return jwt.sign({ id: userId }, process.env.JWT_SECRET!, {
+  private static generateToken(userUid: string): string {
+    return jwt.sign({ uid: userUid }, process.env.JWT_SECRET!, {
       expiresIn: '24h',
     });
   }
@@ -24,7 +24,7 @@ export class AuthService {
       name,
     });
 
-    const token = this.generateToken(user.id);
+    const token = this.generateToken(user.uid);
     return { user, token };
   }
 
@@ -42,7 +42,7 @@ export class AuthService {
       throw new Error('Invalid credentials');
     }
 
-    const token = this.generateToken(user.id);
+    const token = this.generateToken(user.uid);
     return { user, token };
   }
 }

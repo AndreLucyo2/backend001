@@ -82,6 +82,25 @@ Content-Type: application/json
 - `npm run dev`: Start development server with hot-reload
 - `npm run build`: Build the TypeScript code
 - `npm start`: Start the production server
+- `npm run kill-server`: Kill the development server
+- `npm run restart`: Restart the development server
+
+### Matar servidor pelo terminal
+
+No Windows, podemos usar o comando para listar e matar o processo que está usando a porta do servidor, por exemplo 3000:
+
+```bash
+netstat -ano | findstr :3000
+```
+
+```bash
+netstat -ano | findstr :3000
+  TCP    0.0.0.0:3000           0.0.0.0:0              LISTENING       28608
+  TCP    [::]:3000              [::]:0                 LISTENING       28608
+  TCP    [::1]:3000             [::1]:65504            TIME_WAIT       0
+  TCP    [::1]:65503            [::1]:3000             TIME_WAIT       0
+PS ***\projeto-IA-001\backend001> taskkill /F /PID 28608
+```
 
 ## Testes via Cliente Postman
 

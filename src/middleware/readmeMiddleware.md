@@ -10,12 +10,13 @@ O `AuthMiddleware` é um componente crucial para a segurança da API, responsáv
 
 ```typescript
 interface JwtPayload {
-  id: number;
+  uid: string;
 }
 ```
 
 - Define a estrutura do payload do token JWT
-- Contém apenas o ID do usuário para minimizar o tamanho do token
+- Contém o UUID do usuário para maior segurança
+- Evita uso de IDs sequenciais previsíveis
 
 #### Extensão do Express Request
 
@@ -49,10 +50,10 @@ async (req: Request, res: Response, next: NextFunction): Promise<void | Response
 2. **Validação do Token**
    - Extrai o token do header
    - Verifica a assinatura usando JWT_SECRET
-   - Decodifica o payload para obter o ID do usuário
+   - Decodifica o payload para obter o UUID do usuário
 
 3. **Busca do Usuário**
-   - Busca o usuário no banco usando o ID do token
+   - Busca o usuário no banco usando o UUID do token
    - Verifica se o usuário ainda existe
    - Retorna 401 se usuário não encontrado
 
@@ -76,6 +77,7 @@ async (req: Request, res: Response, next: NextFunction): Promise<void | Response
 
 1. **Segurança**
    - Validação completa do token
+   - Uso de UUID em vez de IDs sequenciais
    - Mensagens de erro genéricas
    - Verificação da existência do usuário
 
@@ -110,3 +112,4 @@ router.get('/protected', authMiddleware, (req, res) => {
 2. O token JWT deve ser incluído no header Authorization de todas as requisições
 3. O formato do token deve ser: `Bearer <token_jwt>`
 4. Erros de autenticação sempre retornam status 401 (Unauthorized)
+5. O uso de UUID como identificador aumenta a segurança da aplicação

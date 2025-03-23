@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import { User } from '../models/User';
 
 interface JwtPayload {
-  id: number;
+  uid: string;
 }
 
 declare global {
@@ -29,7 +29,7 @@ export const authMiddleware = async (
     const token = authHeader.split(' ')[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
     
-    const user = await User.findByPk(decoded.id);
+    const user = await User.findByPk(decoded.uid);
     if (!user) {
       return res.status(401).json({ message: 'User not found' });
     }

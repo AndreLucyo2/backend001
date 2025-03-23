@@ -28,7 +28,7 @@ export class AuthController {
       return res.status(201).json({
         message: 'User registered successfully',
         user: {
-          id: result.user.id,
+          id: result.user.uid,
           email: result.user.email,
           name: result.user.name,
         },
@@ -52,7 +52,7 @@ export class AuthController {
       return res.status(200).json({
         message: 'Login successful',
         user: {
-          id: result.user.id,
+          uid: result.user.uid,
           email: result.user.email,
           name: result.user.name,
         },

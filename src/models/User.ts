@@ -1,9 +1,10 @@
 import { Model, DataTypes } from 'sequelize';
 import { sequelize } from '../config/database';
 import bcrypt from 'bcryptjs';
+import { v4 as uuidv4 } from 'uuid';
 
 export class User extends Model {
-  public id!: number;
+  public uid!: string;
   public email!: string;
   public password!: string;
   public name!: string;
@@ -17,10 +18,13 @@ export class User extends Model {
 
 User.init(
   {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
+    uid: {
+      type: DataTypes.UUID,
+      defaultValue: () => uuidv4().toUpperCase(),
       primaryKey: true,
+      set(value: string) {
+        this.setDataValue('uid', value?.toUpperCase());
+      }
     },
     email: {
       type: DataTypes.STRING,
