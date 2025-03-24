@@ -4,7 +4,7 @@ A modern REST API built with Node.js, TypeScript, Express, and SQLite following 
 
 ## Project Structure
 
-```
+```bash
 src/
 ├── config/         # Configuration files (database, env, etc.)
 ├── controllers/    # Request handlers
@@ -34,15 +34,15 @@ src/
 npm install
 ```
 
-2. Create a `.env` file in the root directory with the following content:
+2.Create a `.env` file in the root directory with the following content:
 
-```
+```bash
 PORT=3000
 JWT_SECRET=your_jwt_secret_key_here
 NODE_ENV=development
 ```
 
-3. Start the development server:
+3.Start the development server:
 
 ```bash
 npm run dev
@@ -54,7 +54,7 @@ npm run dev
 
 #### Register a new user
 
-```
+```bash
 POST /api/auth/register
 Content-Type: application/json
 
@@ -67,7 +67,7 @@ Content-Type: application/json
 
 #### Login
 
-```
+```bash
 POST /api/auth/login
 Content-Type: application/json
 
@@ -76,6 +76,46 @@ Content-Type: application/json
   "password": "password123"
 }
 ```
+
+## Deployment Local
+
+Para fazer o deploy em ambiente local, siga os passos:
+
+1. **Build do Projeto**
+
+```bash
+npm run build
+```
+
+- Compila o código TypeScript para JavaScript
+- Gera os arquivos na pasta `dist/`
+
+2.**Preparar pasta de produção**
+
+```bash
+# Criar pasta para produção
+mkdir backend-prod
+
+# Copiar arquivos necessários
+xcopy dist backend-prod\dist /E /I
+copy package.json backend-prod\
+copy .env backend-prod\
+```
+
+3.**Instalar dependências de produção**
+
+```bash
+cd backend-prod
+npm install --production
+```
+
+4.**Iniciar servidor**
+
+```bash
+npm start
+```
+
+O servidor estará rodando em modo produção usando o código compilado da pasta `dist/`.
 
 ## Scripts
 
