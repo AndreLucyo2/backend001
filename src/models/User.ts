@@ -8,6 +8,7 @@ export class User extends Model {
   public email!: string;
   public password!: string;
   public name!: string;
+  public isActive!: boolean;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
@@ -40,6 +41,11 @@ User.init(
     },
     name: {
       type: DataTypes.STRING,
+      allowNull: false,
+    },
+    isActive: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
       allowNull: false,
     },
   },

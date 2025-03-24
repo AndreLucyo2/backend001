@@ -146,6 +146,19 @@ npm start
 - `npm run kill-server`: Kill the development server
 - `npm run restart`: Restart the development server
 
+### Sequência de Ações
+
+Quando você executa o comando `npm run dev`, a sequência de ações é a seguinte:
+
+- `nodemon src/server.ts`: Este comando é executado, utilizando o `nodemon` para monitorar alterações no arquivo `src/server.ts` e reiniciar automaticamente o servidor quando mudanças são detectadas.
+- Execução do `server.ts`:
+  - Importações: Carrega variáveis de ambiente e importa módulos necessários como express, cors, helmet e módulos locais para configurar rotas e o banco de dados.
+  - Inicialização do App: Cria uma instância da aplicação Express.
+  - Configuração de Middleware: Aplica middleware para segurança (helmet), CORS e análise de JSON.
+  - Configuração de Rotas: Chama setupRoutes(app) para definir as rotas da aplicação.
+  - Inicialização do Banco de Dados: Chama setupDatabase() para inicializar o banco de dados. Se for bem-sucedido, o servidor começa a escutar na porta especificada. Se falhar, um erro é registrado e o processo é encerrado.
+Essa sequência garante que sua aplicação esteja configurada com as configurações necessárias e pronta para lidar com requisições.
+
 ### Matar servidor pelo terminal
 
 No Windows, podemos usar o comando para listar e matar o processo que está usando a porta do servidor, por exemplo 3000:

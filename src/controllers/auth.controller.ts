@@ -62,4 +62,26 @@ export class AuthController {
       return res.status(401).json({ message: error.message });
     }
   }
+
+  // New method to deactivate a user
+  public static async deactivate(req: Request, res: Response): Promise<Response> {
+    try {
+      const { uid } = req.body;
+      await AuthService.deactivateUser(uid);
+      return res.status(200).json({ message: 'User deactivated successfully' });
+    } catch (error: any) {
+      return res.status(400).json({ message: error.message });
+    }
+  }
+
+  // New method to list users
+  public static async list(req: Request, res: Response): Promise<Response> {
+    try {
+      const { name, email } = req.query;
+      const users = await AuthService.listUsers({ name: name as string, email: email as string });
+      return res.status(200).json(users);
+    } catch (error: any) {
+      return res.status(400).json({ message: error.message });
+    }
+  }
 }
