@@ -109,13 +109,34 @@ cd backend-prod
 npm install --production
 ```
 
-4.**Iniciar servidor**
+4.**Criar arquivo de inicialização**
+
+```bash
+# Criar arquivo start-server.bat
+echo @echo off > start-server.bat
+echo echo Iniciando servidor Node.js... >> start-server.bat
+echo echo. >> start-server.bat
+echo cd /d "%%~dp0" >> start-server.bat
+echo node dist/server.js >> start-server.bat
+echo pause >> start-server.bat
+```
+
+### Executando o Servidor
+
+Após a instalação, você tem duas opções para iniciar o servidor:
+
+1.**Via Terminal**
 
 ```bash
 npm start
 ```
 
-O servidor estará rodando em modo produção usando o código compilado da pasta `dist/`.
+2.**Via Arquivo .bat**
+
+- Basta dar duplo clique no arquivo `start-server.bat`
+- O servidor iniciará automaticamente
+- Uma janela do terminal mostrará o status do servidor
+- Para fechar o servidor, basta fechar a janela ou pressionar qualquer tecla
 
 ## Scripts
 
