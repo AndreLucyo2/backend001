@@ -96,6 +96,18 @@ async (req: Request, res: Response, next: NextFunction): Promise<void | Response
    - Uso de async/await para operações assíncronas
    - Retorno antecipado em casos de erro
 
+### Atualizações Recentes
+
+### Novas Rotas de Autenticação
+
+- **PATCH /deactivate**: Desativa um usuário autenticado. Requer que o usuário esteja autenticado e envia o `uid` no corpo da requisição.
+- **GET /users**: Lista os usuários com base nos parâmetros de consulta `name` e `email`. Retorna uma lista de usuários que correspondem aos critérios de pesquisa.
+
+### Controlador de Autenticação
+
+- **deactivate**: Método adicionado para desativar um usuário com base no `uid` fornecido.
+- **list**: Método adicionado para listar usuários com base nos parâmetros de consulta `name` e `email`.
+
 ### Uso em Rotas
 
 ```typescript
