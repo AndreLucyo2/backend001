@@ -1,14 +1,25 @@
 # Dependencies
 node_modules/
 
+#package-lock.json file
+package-lock.json
+
+#yarn.lock file
+yarn.lock
+
 # Build output
 dist/
+build/
 
 # Pasta de produção
 #backend-prod/
 
-# Environment variables
+### Environment Variables ###
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
 # Database
 *.sqlite
