@@ -31,7 +31,6 @@ authRouter.patch(
   '/deactivate',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { uid } = req.body;
       await AuthController.deactivate(req, res);
     } catch (error) {
       next(error);
