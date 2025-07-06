@@ -1,0 +1,211 @@
+{
+	"info": {
+		"_postman_id": "41ad8ec2-9317-46fa-82d1-d9baa6812e75",
+		"name": "backend001",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25112042",
+		"_collection_link": "https://speeding-crater-93113.postman.co/workspace/QA-Estudos~bcb33219-25f1-42e5-9c4b-388b481a21ac/collection/25112042-41ad8ec2-9317-46fa-82d1-d9baa6812e75?action=share&source=collection_link&creator=25112042"
+	},
+	"item": [
+		{
+			"name": "listUsers",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{ACCESS_TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"Usuário Teste\",\r\n  \"email\": \"usuario@teste.com\",\r\n  \"password\": \"senha123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/auth/users",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"seta variavel\", () => {\r",
+							"    \r",
+							"    const message = pm.response.json().message;\r",
+							"    const name = pm.response.json().user.name;\r",
+							"    const email = pm.response.json().user.email;\r",
+							"    const token = pm.response.json().token;\r",
+							"    const uid = pm.response.json().user.uid;\r",
+							"\r",
+							"    console.log(message);\r",
+							"    console.log(name);\r",
+							"    console.log(email);\r",
+							"    console.log(token);\r",
+							"    console.log(uid);\r",
+							"\r",
+							"    pm.environment.set(\"EMAIL\", email);\r",
+							"    pm.environment.set(\"NAME\", name);\r",
+							"    pm.environment.set(\"ACCESS_TOKEN\", token);\r",
+							"    pm.environment.set(\"UID\", uid);\r",
+							"    pm.environment.set(\"MSG\", message);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"usuario@teste.com\",\r\n  \"password\": \"senha123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/auth/login",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "registro",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"Usuário Teste02\",\r\n  \"email\": \"usuario@teste02.com\",\r\n  \"password\": \"senha123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/auth/register",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "desativar user",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{ACCESS_TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"uid\": \"4DAF7F75-AF8D-48D2-936D-0BA6EF5E75E6\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/auth/deactivate",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"deactivate"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "ACCESS_TOKEN",
+			"value": "ACCESS_TOKEN",
+			"type": "string"
+		}
+	]
+}
