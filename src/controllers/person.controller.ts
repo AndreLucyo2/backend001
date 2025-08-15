@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Person } from '../models/person.model';
+import { Person } from '../models/person';
 
 export class PersonController {
     static async create(req: Request, res: Response): Promise<void> {

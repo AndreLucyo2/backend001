@@ -89,6 +89,7 @@ npm run build
 
 - Compila o código TypeScript para JavaScript
 - Gera os arquivos na pasta `dist/`
+- Depois copiar para a pasta `/backend-prod`
 
 2.**Preparar pasta de produção**
 
