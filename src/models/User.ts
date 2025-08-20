@@ -9,7 +9,7 @@ export class User extends Model {
   public password!: string;
   public name!: string;
   public isActive!: boolean;
-  public personUid!: string | null; // FK para seus próprios dados pessoais
+  public personUid!: string | null;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
