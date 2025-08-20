@@ -7,7 +7,7 @@
 	},
 	"item": [
 		{
-			"name": "registro",
+			"name": "Registrar usuário",
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -21,13 +21,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseUrl}}/api/auth/register",
+					"raw": "{{baseUrl}}/api/users/register",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
 						"api",
-						"auth",
+						"users",
 						"register"
 					]
 				}
@@ -42,19 +42,11 @@
 					"script": {
 						"exec": [
 							"pm.test(\"seta variavel\", () => {\r",
-							"    \r",
 							"    const message = pm.response.json().message;\r",
 							"    const name = pm.response.json().user.name;\r",
 							"    const email = pm.response.json().user.email;\r",
 							"    const token = pm.response.json().token;\r",
 							"    const uid = pm.response.json().user.uid;\r",
-							"\r",
-							"    console.log(message);\r",
-							"    console.log(name);\r",
-							"    console.log(email);\r",
-							"    console.log(token);\r",
-							"    console.log(uid);\r",
-							"\r",
 							"    pm.environment.set(\"EMAIL\", email);\r",
 							"    pm.environment.set(\"NAME\", name);\r",
 							"    pm.environment.set(\"ACCESS_TOKEN_IA\", token);\r",
@@ -62,8 +54,7 @@
 							"    pm.environment.set(\"MSG\", message);\r",
 							"});"
 						],
-						"type": "text/javascript",
-						"packages": {}
+						"type": "text/javascript"
 					}
 				}
 			],
@@ -94,7 +85,7 @@
 			"response": []
 		},
 		{
-			"name": "listUsers",
+			"name": "Listar usuários",
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -109,14 +100,51 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/api/auth/users",
+					"raw": "{{baseUrl}}/api/users",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
 						"api",
-						"auth",
 						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Desativar usuário",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{ACCESS_TOKEN_IA}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"uid\": \"4DAF7F75-AF8D-48D2-936D-0BA6EF5E75E6\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/users/deactivate",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"deactivate"
 					]
 				}
 			},
@@ -130,19 +158,11 @@
 					"script": {
 						"exec": [
 							"pm.test(\"seta variavel\", () => {\r",
-							"    \r",
 							"    const message = pm.response.json().message;\r",
 							"    const name = pm.response.json().user.name;\r",
 							"    const email = pm.response.json().user.email;\r",
 							"    const token = pm.response.json().token;\r",
 							"    const uid = pm.response.json().user.uid;\r",
-							"\r",
-							"    console.log(message);\r",
-							"    console.log(name);\r",
-							"    console.log(email);\r",
-							"    console.log(token);\r",
-							"    console.log(uid);\r",
-							"\r",
 							"    pm.environment.set(\"EMAIL\", email);\r",
 							"    pm.environment.set(\"NAME\", name);\r",
 							"    pm.environment.set(\"ACCESS_TOKEN\", token);\r",
@@ -150,8 +170,7 @@
 							"    pm.environment.set(\"MSG\", message);\r",
 							"});"
 						],
-						"type": "text/javascript",
-						"packages": {}
+						"type": "text/javascript"
 					}
 				}
 			],
@@ -195,19 +214,11 @@
 					"script": {
 						"exec": [
 							"pm.test(\"seta variavel\", () => {\r",
-							"    \r",
 							"    const message = pm.response.json().message;\r",
 							"    const name = pm.response.json().user.name;\r",
 							"    const email = pm.response.json().user.email;\r",
 							"    const token = pm.response.json().token;\r",
 							"    const uid = pm.response.json().user.uid;\r",
-							"\r",
-							"    console.log(message);\r",
-							"    console.log(name);\r",
-							"    console.log(email);\r",
-							"    console.log(token);\r",
-							"    console.log(uid);\r",
-							"\r",
 							"    pm.environment.set(\"EMAIL\", email);\r",
 							"    pm.environment.set(\"NAME\", name);\r",
 							"    pm.environment.set(\"ACCESS_TOKEN\", token);\r",
@@ -215,8 +226,7 @@
 							"    pm.environment.set(\"MSG\", message);\r",
 							"});"
 						],
-						"type": "text/javascript",
-						"packages": {}
+						"type": "text/javascript"
 					}
 				}
 			],
@@ -261,68 +271,9 @@
 				}
 			},
 			"response": []
-		},
-		{
-			"name": "desativar user",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{ACCESS_TOKEN}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "PATCH",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"uid\": \"4DAF7F75-AF8D-48D2-936D-0BA6EF5E75E6\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}/api/auth/deactivate",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"api",
-						"auth",
-						"deactivate"
-					]
-				}
-			},
-			"response": []
 		}
 	],
-	"event": [
-		{
-			"listen": "prerequest",
-			"script": {
-				"type": "text/javascript",
-				"packages": {},
-				"exec": [
-					""
-				]
-			}
-		},
-		{
-			"listen": "test",
-			"script": {
-				"type": "text/javascript",
-				"packages": {},
-				"exec": [
-					""
-				]
-			}
-		}
-	],
+	"event": [],
 	"variable": [
 		{
 			"key": "baseUrl",

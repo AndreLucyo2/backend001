@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { PersonController } from '../controllers/person.controller';
-import { authMiddleware } from '../middleware/auth.middleware'; // ajuste para 'middleware', não 'middlewares'
+import { authMiddleware } from '../middleware/auth.middleware';
 
 export const personRoutes = Router();
 
