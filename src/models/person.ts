@@ -10,6 +10,10 @@ interface PersonAttributes {
     cpf: string;
     cnpj: string;
     observation: string;
+    active: boolean;
+    createdByUserUid?: string | null;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 interface PersonCreationAttributes extends Optional<PersonAttributes, 'uid'> { }
@@ -22,6 +26,10 @@ export class Person extends Model<PersonAttributes, PersonCreationAttributes> im
     public cpf!: string;
     public cnpj!: string;
     public observation!: string;
+    public active!: boolean;
+    public createdByUserUid!: string | null;
+    public createdAt!: Date;
+    public updatedAt!: Date;
 }
 
 Person.init(
@@ -57,6 +65,26 @@ Person.init(
         observation: {
             type: DataTypes.TEXT,
             allowNull: true,
+        },
+        active: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: true,
+        },
+        createdByUserUid: {
+            type: DataTypes.UUID,
+            allowNull: true,
+            references: { model: 'users', key: 'uid' }
+        },
+        createdAt: {
+            type: DataTypes.DATE,
+            allowNull: false,
+            defaultValue: DataTypes.NOW,
+        },
+        updatedAt: {
+            type: DataTypes.DATE,
+            allowNull: false,
+            defaultValue: DataTypes.NOW,
         },
     },
     {
