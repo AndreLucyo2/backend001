@@ -1,289 +1,60 @@
 {
 	"info": {
-		"_postman_id": "702eadc9-a980-42da-96fb-8a31eb2c31e5",
+		"_postman_id": "31a67b64-963c-4b5e-863c-e9cf3f37db7a",
 		"name": "backend001",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "11607993"
 	},
 	"item": [
 		{
-			"name": "Registrar usuário",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"name\": \"Usuário Teste01\",\r\n  \"email\": \"usuario@teste01.com\",\r\n  \"password\": \"senha123\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}/api/users/register",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"api",
-						"users",
-						"register"
-					]
-				}
-			},
-			"response": []
+			"name": "user",
+			"item": []
 		},
 		{
-			"name": "Login",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"seta variavel\", () => {\r",
-							"    const message = pm.response.json().message;\r",
-							"    const name = pm.response.json().user.name;\r",
-							"    const email = pm.response.json().user.email;\r",
-							"    const token = pm.response.json().token;\r",
-							"    const uid = pm.response.json().user.uid;\r",
-							"    pm.environment.set(\"EMAIL\", email);\r",
-							"    pm.environment.set(\"NAME\", name);\r",
-							"    pm.environment.set(\"ACCESS_TOKEN_IA\", token);\r",
-							"    pm.environment.set(\"UID\", uid);\r",
-							"    pm.environment.set(\"MSG\", message);\r",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"email\": \"usuario@teste01.com\",\r\n  \"password\": \"senha123\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}/api/auth/login",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"api",
-						"auth",
-						"login"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Listar usuários",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{ACCESS_TOKEN_IA}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{baseUrl}}/api/users",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"api",
-						"users"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Desativar usuário",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{ACCESS_TOKEN_IA}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "PATCH",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"uid\": \"4DAF7F75-AF8D-48D2-936D-0BA6EF5E75E6\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}/api/users/deactivate",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"api",
-						"users",
-						"deactivate"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Person POST Sem token",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"seta variavel\", () => {\r",
-							"    const message = pm.response.json().message;\r",
-							"    const name = pm.response.json().user.name;\r",
-							"    const email = pm.response.json().user.email;\r",
-							"    const token = pm.response.json().token;\r",
-							"    const uid = pm.response.json().user.uid;\r",
-							"    pm.environment.set(\"EMAIL\", email);\r",
-							"    pm.environment.set(\"NAME\", name);\r",
-							"    pm.environment.set(\"ACCESS_TOKEN\", token);\r",
-							"    pm.environment.set(\"UID\", uid);\r",
-							"    pm.environment.set(\"MSG\", message);\r",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"name\": \"John Doe\",\r\n  \"phone\": \"11999999999\",\r\n  \"email\": \"john@example.com\",\r\n  \"cpf\": \"12345678901\",\r\n  \"cnpj\": \"12345678000199\",\r\n  \"observation\": \"Test person\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}/api/person/create",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"api",
-						"person",
-						"create"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Person POST com token",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"seta variavel\", () => {\r",
-							"    const message = pm.response.json().message;\r",
-							"    const name = pm.response.json().user.name;\r",
-							"    const email = pm.response.json().user.email;\r",
-							"    const token = pm.response.json().token;\r",
-							"    const uid = pm.response.json().user.uid;\r",
-							"    pm.environment.set(\"EMAIL\", email);\r",
-							"    pm.environment.set(\"NAME\", name);\r",
-							"    pm.environment.set(\"ACCESS_TOKEN\", token);\r",
-							"    pm.environment.set(\"UID\", uid);\r",
-							"    pm.environment.set(\"MSG\", message);\r",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{ACCESS_TOKEN_IA}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"name\": \"John Doe\",\r\n  \"phone\": \"11999999999\",\r\n  \"email\": \"john@example.com\",\r\n  \"cpf\": \"12345678901\",\r\n  \"cnpj\": \"12345678000199\",\r\n  \"observation\": \"Test person\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}/api/person/create",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"api",
-						"person",
-						"create"
-					]
-				}
-			},
-			"response": []
+			"name": "person",
+			"item": []
 		}
 	],
-	"event": [],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{ACCESS_TOKEN_IA}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
 	"variable": [
 		{
 			"key": "baseUrl",
-			"value": "http://localhost:3001",
-			"type": "string"
+			"value": "http://localhost:3001"
 		},
 		{
 			"key": "ACCESS_TOKEN_IA",
-			"value": "ACCESS_TOKEN_IA",
-			"type": "string"
+			"value": ""
 		}
 	]
 }
