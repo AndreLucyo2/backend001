@@ -4,6 +4,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 import { setupRoutes } from './routes';
 import { setupDatabase } from './config/database';
+import { APP_VERSION } from "./version";
+
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -18,9 +20,12 @@ setupRoutes(app);
 
 // Database initialization
 setupDatabase()
-  .then(() => {
-    app.listen(port, () => {
+.then(() => {
+  app.listen(port, () => {
+
+      console.log(`Servidor iniciado na versão ${APP_VERSION}`);
       console.log(`Server is running on port ${port}`);
+      
     });
   })
   .catch((error) => {

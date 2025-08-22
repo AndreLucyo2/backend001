@@ -23,7 +23,7 @@ export class PersonService {
 
     // Regra de negócio: Deve ter CPF ou CNPJ,
     if (!personData.cpf && !personData.cnpj) {      
-      throw new Error('CPF/CNPJ é um campo obrigatório');
+      throw new Error('Informe um documento (CPF ou CNPJ).');
     }
 
     // Formatação e validação de CPF
