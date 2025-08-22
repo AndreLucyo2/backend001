@@ -1,6 +1,13 @@
 import { Person } from '../models/person';
 import { User } from '../models/user';
 import { Op } from 'sequelize';
+import {
+  formatPhone,
+  formatCPF,
+  formatCNPJ,
+  validateCPF,
+  validateCNPJ
+} from '../utils/utilis';
 
 export class PersonService {
   /**
@@ -8,46 +15,72 @@ export class PersonService {
    * e registrar quem fez o cadastro (createdByUserUid)
    */
   static async createPerson(personData: any, createdByUserUid?: string) {
-    // Regra de negócio: Deve ter CPF ou CNPJ, mas nunca ambos e nunca nenhum
-    if ((personData.cpf && personData.cnpj) || (!personData.cpf && !personData.cnpj)) {
+
+    // Regra de negócio: nunca ambos 
+    if ((personData.cpf && personData.cnpj)) {
       throw new Error('Informe apenas CPF ou CNPJ');
     }
 
-    // Formatação e validação de telefone
-    if (personData.phone) {
-      personData.phone = this.formatPhone(personData.phone);
+    // Regra de negócio: Deve ter CPF ou CNPJ,
+    if (!personData.cpf && !personData.cnpj) {      
+      throw new Error('CPF/CNPJ é um campo obrigatório');
     }
 
     // Formatação e validação de CPF
     if (personData.cpf) {
-      personData.cpf = this.formatCPF(personData.cpf);
-      if (!this.validateCPF(personData.cpf)) {
+      personData.cpf = formatCPF(personData.cpf);
+      if (!validateCPF(personData.cpf)) {
         throw new Error('CPF inválido');
       }
     }
 
     // Formatação e validação de CNPJ
     if (personData.cnpj) {
-      personData.cnpj = this.formatCNPJ(personData.cnpj);
-      if (!this.validateCNPJ(personData.cnpj)) {
+      personData.cnpj = formatCNPJ(personData.cnpj);
+      if (!validateCNPJ(personData.cnpj)) {
         throw new Error('CNPJ inválido');
       }
     }
 
-    // Validação de email único
-    if (personData.email) {
-      const existingPerson = await Person.findOne({
-        where: { email: personData.email }
+    // Validação de CPF ou CNPF único
+    if (personData.cnpj || personData.cpf) {
+      const existingCnpj = await Person.findOne({
+        where: { cnpj: personData.cnpj }
       });
-      if (existingPerson) {
-        throw new Error('Email já cadastrado para outra pessoa');
+      if (existingCnpj && existingCnpj.uid !== personData.uid) {
+        throw new Error('CNPJ já cadastrado para outra pessoa');
       }
+
+      const existingCpf = await Person.findOne({
+        where: { cpf: personData.cpf }
+      });
+      if (existingCpf && existingCpf.uid !== personData.uid) {
+        throw new Error('CPF já cadastrado para outra pessoa');
+      }
+
+      // Formatação e validação de telefone
+      if (personData.phone) {
+        personData.phone = formatPhone(personData.phone);
+      }
+
     }
 
+    // Validação de email único
+    // if (personData.email) {
+    //   const existingPerson = await Person.findOne({
+    //     where: { email: personData.email }
+    //   });
+    //   if (existingPerson) {
+    //     throw new Error('Email já cadastrado para outra pessoa');
+    //   }
+    // }
+
+    //Registra quem criou a pessoa
     if (createdByUserUid) {
       personData.createdByUserUid = createdByUserUid;
     }
 
+    // Define timestamps
     personData.createdAt = new Date();
     personData.updatedAt = new Date();
 
@@ -57,7 +90,7 @@ export class PersonService {
   /**
    * Atualizar pessoa com validações de negócio
    */
-  static async updatePerson(uid: string, updateData: any) {
+  static async updatePerson(uid: string, updateData: any, updatedByUserUid?: string) {
     const person = await Person.findByPk(uid);
     if (!person) {
       throw new Error('Pessoa não encontrada');
@@ -78,26 +111,31 @@ export class PersonService {
 
     // Formatação e validação de telefone
     if (updateData.phone) {
-      updateData.phone = this.formatPhone(updateData.phone);
+      updateData.phone = formatPhone(updateData.phone);
     }
 
     // Formatação e validação de CPF
     if (updateData.cpf) {
-      updateData.cpf = this.formatCPF(updateData.cpf);
-      if (!this.validateCPF(updateData.cpf)) {
+      updateData.cpf = formatCPF(updateData.cpf);
+      if (!validateCPF(updateData.cpf)) {
         throw new Error('CPF inválido');
       }
     }
 
     // Formatação e validação de CNPJ
     if (updateData.cnpj) {
-      updateData.cnpj = this.formatCNPJ(updateData.cnpj);
-      if (!this.validateCNPJ(updateData.cnpj)) {
+      updateData.cnpj = formatCNPJ(updateData.cnpj);
+      if (!validateCNPJ(updateData.cnpj)) {
         throw new Error('CNPJ inválido');
       }
     }
 
     updateData.updatedAt = new Date();
+
+    // Registra quem fez a última alteração
+    if (updatedByUserUid) {
+      updateData.updatedByUserUid = updatedByUserUid;
+    }
 
     await Person.update(updateData, { where: { uid } });
     return await Person.findByPk(uid);
@@ -129,7 +167,7 @@ export class PersonService {
    */
   static async listPersons(filters: any = {}, page: number = 1, limit: number = 10) {
     const offset = (page - 1) * limit;
-    
+
     const whereClause: any = {};
 
     // Regra de negócio: Filtros inteligentes
@@ -142,11 +180,11 @@ export class PersonService {
     }
 
     if (filters.cpf) {
-      whereClause.cpf = this.formatCPF(filters.cpf);
+      whereClause.cpf = formatCPF(filters.cpf);
     }
 
     if (filters.cnpj) {
-      whereClause.cnpj = this.formatCNPJ(filters.cnpj);
+      whereClause.cnpj = formatCNPJ(filters.cnpj);
     }
 
     const { count, rows } = await Person.findAndCountAll({
@@ -168,7 +206,7 @@ export class PersonService {
   }
 
   /**
-   * Vincular uma pessoa como dados pessoais de um usuário (1:1)
+   * Vincular uma pessoa com um usuário (1:1) - dados pessoais do usuário
    */
   static async linkPersonToUser(personUid: string, userUid: string) {
     const person = await Person.findByPk(personUid);
@@ -213,96 +251,5 @@ export class PersonService {
   static async deletePerson(uid: string): Promise<boolean> {
     const deleted = await Person.destroy({ where: { uid } });
     return deleted > 0;
-  }
-
-  // ===== MÉTODOS AUXILIARES (Regras de formatação) =====
-
-  /**
-   * Formatar telefone
-   */
-  private static formatPhone(phone: string): string {
-    // Remove tudo que não é número
-    const numbers = phone.replace(/\D/g, '');
-    
-    // Aplica máscara (XX) XXXXX-XXXX
-    if (numbers.length === 11) {
-      return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7)}`;
-    }
-    
-    // Aplica máscara (XX) XXXX-XXXX
-    if (numbers.length === 10) {
-      return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 6)}-${numbers.slice(6)}`;
-    }
-    
-    return phone; // Retorna original se não conseguir formatar
-  }
-
-  /**
-   * Formatar CPF
-   */
-  private static formatCPF(cpf: string): string {
-    const numbers = cpf.replace(/\D/g, '');
-    if (numbers.length === 11) {
-      return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(6, 9)}-${numbers.slice(9)}`;
-    }
-    return cpf;
-  }
-
-  /**
-   * Formatar CNPJ
-   */
-  private static formatCNPJ(cnpj: string): string {
-    const numbers = cnpj.replace(/\D/g, '');
-    if (numbers.length === 14) {
-      return `${numbers.slice(0, 2)}.${numbers.slice(2, 5)}.${numbers.slice(5, 8)}/${numbers.slice(8, 12)}-${numbers.slice(12)}`;
-    }
-    return cnpj;
-  }
-
-  /**
-   * Validação real de CPF
-   */
-  private static validateCPF(cpf: string): boolean {
-    const numbers = cpf.replace(/\D/g, '');
-    if (numbers.length !== 11 || /^(\d)\1+$/.test(numbers)) return false;
-    let sum = 0, rest;
-    for (let i = 1; i <= 9; i++) sum += parseInt(numbers.substring(i - 1, i)) * (11 - i);
-    rest = (sum * 10) % 11;
-    if (rest === 10 || rest === 11) rest = 0;
-    if (rest !== parseInt(numbers.substring(9, 10))) return false;
-    sum = 0;
-    for (let i = 1; i <= 10; i++) sum += parseInt(numbers.substring(i - 1, i)) * (12 - i);
-    rest = (sum * 10) % 11;
-    if (rest === 10 || rest === 11) rest = 0;
-    return rest === parseInt(numbers.substring(10, 11));
-  }
-
-  /**
-   * Validação real de CNPJ
-   */
-  private static validateCNPJ(cnpj: string): boolean {
-    const numbers = cnpj.replace(/\D/g, '');
-    if (numbers.length !== 14 || /^(\d)\1+$/.test(numbers)) return false;
-    let length = numbers.length - 2;
-    let numbersBase = numbers.substring(0, length);
-    let digits = numbers.substring(length);
-    let sum = 0;
-    let pos = length - 7;
-    for (let i = length; i >= 1; i--) {
-      sum += parseInt(numbersBase.charAt(length - i)) * pos--;
-      if (pos < 2) pos = 9;
-    }
-    let result = sum % 11 < 2 ? 0 : 11 - sum % 11;
-    if (result !== parseInt(digits.charAt(0))) return false;
-    length = length + 1;
-    numbersBase = numbers.substring(0, length);
-    sum = 0;
-    pos = length - 7;
-    for (let i = length; i >= 1; i--) {
-      sum += parseInt(numbersBase.charAt(length - i)) * pos--;
-      if (pos < 2) pos = 9;
-    }
-    result = sum % 11 < 2 ? 0 : 11 - sum % 11;
-    return result === parseInt(digits.charAt(1));
   }
 }

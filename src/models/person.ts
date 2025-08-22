@@ -13,6 +13,7 @@ interface PersonAttributes {
     active: boolean;
     createdByUserUid?: string | null;
     createdAt: Date;
+    updatedByUserUid?: string | null;
     updatedAt: Date;
 }
 
@@ -29,6 +30,7 @@ export class Person extends Model<PersonAttributes, PersonCreationAttributes> im
     public active!: boolean;
     public createdByUserUid!: string | null;
     public createdAt!: Date;
+    public updatedByUserUid!: string | null;
     public updatedAt!: Date;
 }
 
@@ -85,6 +87,11 @@ Person.init(
             type: DataTypes.DATE,
             allowNull: false,
             defaultValue: DataTypes.NOW,
+        },
+        updatedByUserUid: {
+            type: DataTypes.UUID,
+            allowNull: true,
+            references: { model: 'users', key: 'uid' }
         },
     },
     {
