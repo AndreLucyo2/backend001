@@ -7,6 +7,7 @@ export const authRouter = Router();
 // Criar instância do controller usando DI
 const authController = DIContainer.createAuthController();
 
+//Permite registrar novos usuários e fazer login
 authRouter.post(
   '/register',
   AuthController.validations.register,

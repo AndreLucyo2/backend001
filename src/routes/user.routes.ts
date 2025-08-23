@@ -4,8 +4,9 @@ import { authMiddleware } from '../middleware/auth.middleware';
 
 export const userRouter = Router();
 
+//Permite registrar novos usuários sem autenticação
 userRouter.post(
-    '/register',
+    '/register', authMiddleware,
     UserController.validations.register,
     async (req: Request, res: Response, next: NextFunction) => {
         try {
@@ -17,7 +18,7 @@ userRouter.post(
 );
 
 userRouter.patch(
-    '/deactivate',authMiddleware,
+    '/deactivate', authMiddleware,
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             await UserController.deactivate(req, res);
