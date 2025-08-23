@@ -3,6 +3,8 @@ import { AuthService } from '../services/auth.service';
 import { body, validationResult } from 'express-validator';
 
 export class AuthController {
+  constructor(private authService: AuthService) { }
+
   public static validations = {
     login: [
       body('email').isEmail().normalizeEmail(),

@@ -6,16 +6,16 @@ export class UserRepository implements IUserRepository {
 
     async create(userData: CreateUserData): Promise<User> {
         try {
-            const userModel = await UserModel.create(userData);
+            const userModel = await UserModel.create(userData as any);
             return this.mapToEntity(userModel);
         } catch (error: any) {
             throw new Error(`Failed to create user: ${error.message}`);
         }
     }
 
-    async findById(id: number): Promise<User | null> {
+    async findByUid(uid: string): Promise<User | null> {
         try {
-            const userModel = await UserModel.findByPk(id);
+            const userModel = await UserModel.findByPk(uid);
             return userModel ? this.mapToEntity(userModel) : null;
         } catch (error: any) {
             throw new Error(`Failed to find user by ID: ${error.message}`);
@@ -31,11 +31,11 @@ export class UserRepository implements IUserRepository {
         }
     }
 
-    async update(id: number, userData: UpdateUserData): Promise<User> {
+    async update(uid: string, userData: UpdateUserData): Promise<User> {
         try {
-            await UserModel.update(userData, { where: { id } });
+            await UserModel.update(userData, { where: { uid } });
 
-            const updatedUser = await this.findById(id);
+            const updatedUser = await this.findByUid(uid);
             if (!updatedUser) {
                 throw new Error('User not found after update');
             }
@@ -46,9 +46,9 @@ export class UserRepository implements IUserRepository {
         }
     }
 
-    async delete(id: number): Promise<boolean> {
+    async delete(uid: string): Promise<boolean> {
         try {
-            const deletedCount = await UserModel.destroy({ where: { id } });
+            const deletedCount = await UserModel.destroy({ where: { uid } });
             return deletedCount > 0;
         } catch (error: any) {
             throw new Error(`Failed to delete user: ${error.message}`);
@@ -69,9 +69,11 @@ export class UserRepository implements IUserRepository {
     // Converte modelo Sequelize para entidade limpa
     private mapToEntity(userModel: any): User {
         return {
-            id: userModel.id,
+            uid: userModel.uid,
             name: userModel.name,
             email: userModel.email,
+            isActive: userModel.isActive,
+            personUid: userModel.personUid,
             password: userModel.password,
             createdAt: userModel.createdAt,
             updatedAt: userModel.updatedAt

@@ -1,7 +1,9 @@
 import jwt from 'jsonwebtoken';
 import { User } from '../models/user';
+import { IUserRepository } from '../interfaces/IUserRepository';
 
 export class AuthService {
+  constructor(private userRepository: IUserRepository) { }
   private static generateToken(userUid: string): string {
     return jwt.sign({ uid: userUid }, process.env.JWT_SECRET!, {
       expiresIn: '24h',
