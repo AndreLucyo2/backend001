@@ -1,5 +1,5 @@
 import { IUserRepository } from '../interfaces/IUserRepository';
-import { User, CreateUserData, UpdateUserData } from '../types/UserTypes';
+import { User, CreateUserData, UpdateUserData, UserResponse } from '../types/UserTypes';
 import { User as UserModel } from '../models/user';
 
 export class UserRepository implements IUserRepository {
@@ -66,6 +66,17 @@ export class UserRepository implements IUserRepository {
         }
     }
 
+    async findAllPublic(): Promise<UserResponse[]> {
+        try {
+            const userModels = await UserModel.findAll({
+                order: [['createdAt', 'DESC']]
+            });
+            return userModels.map(user => this.mapToPublicEntity(user));
+        } catch (error: any) {
+            throw new Error(`Failed to find users: ${error.message}`);
+        }
+    }
+
     // Converte modelo Sequelize para entidade limpa
     private mapToEntity(userModel: any): User {
         return {
@@ -74,7 +85,20 @@ export class UserRepository implements IUserRepository {
             email: userModel.email,
             isActive: userModel.isActive,
             personUid: userModel.personUid,
-            password: userModel.password,
+            password: userModel.password, // Mantém internamente para validações
+            createdAt: userModel.createdAt,
+            updatedAt: userModel.updatedAt
+        };
+    }
+
+    // Novo método para respostas públicas (sem senha)
+    private mapToPublicEntity(userModel: any): UserResponse {
+        return {
+            uid: userModel.uid,
+            name: userModel.name,
+            email: userModel.email,
+            isActive: userModel.isActive,
+            personUid: userModel.personUid,
             createdAt: userModel.createdAt,
             updatedAt: userModel.updatedAt
         };

@@ -1,9 +1,10 @@
+
 import { IUserRepository } from '../interfaces/IUserRepository';
 import { UserRepository } from '../repositories/UserRepository';
 import { AuthService } from '../services/auth.service';
 import { AuthController } from '../controllers/auth.controller';
-
-// Padrão Singleton para repository
+import { UserService } from '../services/user.service';
+import { UserController } from '../controllers/user.controller';
 
 // Centraliza criação de objetos e suas dependências
 export class DIContainer {
@@ -29,5 +30,17 @@ export class DIContainer {
     static createAuthController(): AuthController {
         const authService = this.createAuthService();
         return new AuthController(authService);
+    }
+
+    // Cria UserService com repository injetado
+    static createUserService(): UserService {
+        const userRepository = this.getUserRepository();
+        return new UserService(userRepository);
+    }
+
+    // Cria UserController com service injetado
+    static createUserController(): UserController {
+        const userService = this.createUserService();
+        return new UserController(userService);
     }
 }

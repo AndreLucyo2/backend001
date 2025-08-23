@@ -1,16 +1,20 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { UserController } from '../controllers/user.controller';
 import { authMiddleware } from '../middleware/auth.middleware';
+import { DIContainer } from '../container/DIContainer';
 
 export const userRouter = Router();
 
-//Permite registrar novos usuários sem autenticação
+// Criar instância do controller usando DI
+const userController = DIContainer.createUserController();
+
 userRouter.post(
-    '/register', authMiddleware,
+    '/register', 
+    authMiddleware,
     UserController.validations.register,
     async (req: Request, res: Response, next: NextFunction) => {
         try {
-            await UserController.register(req, res);
+            await userController.register(req, res);
         } catch (error) {
             next(error);
         }
@@ -18,10 +22,11 @@ userRouter.post(
 );
 
 userRouter.patch(
-    '/deactivate', authMiddleware,
+    '/deactivate', 
+    authMiddleware,
     async (req: Request, res: Response, next: NextFunction) => {
         try {
-            await UserController.deactivate(req, res);
+            await userController.deactivate(req, res);
         } catch (error) {
             next(error);
         }
@@ -29,10 +34,11 @@ userRouter.patch(
 );
 
 userRouter.get(
-    '/list', authMiddleware,
+    '/list', 
+    authMiddleware,
     async (req: Request, res: Response, next: NextFunction) => {
         try {
-            await UserController.list(req, res);
+            await userController.list(req, res);
         } catch (error) {
             next(error);
         }

@@ -10,6 +10,7 @@
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
     "kill-server": "powershell -Command \"Get-Process -Name node | Where-Object {$_.CommandLine -like '*server.ts*'} | Stop-Process -Force\"",
+    "kill": "taskkill /F /IM node.exe",
     "restart": "npm run kill-server && npm run dev"
   },
   "keywords": [],

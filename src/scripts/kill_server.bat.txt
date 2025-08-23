@@ -1,0 +1,58 @@
+@echo off
+echo ======================================
+echo    KILL SERVER - Port Manager
+echo ======================================
+echo.
+
+REM Definir porta padrão
+set PORT=3000
+
+REM Permitir que usuário informe uma porta específica
+if "%1"=="" (
+    echo Usando porta padrão: %PORT%
+) else (
+    set PORT=%1
+    echo Usando porta informada: %PORT%
+)
+
+echo.
+echo Procurando processos na porta %PORT%...
+echo.
+
+REM Listar processos na porta
+netstat -ano | findstr :%PORT%
+
+REM Encontrar e matar processos
+for /f "tokens=5" %%a in ('netstat -ano ^| findstr :%PORT%') do (
+    echo.
+    echo Matando processo PID: %%a
+    taskkill /F /PID %%a >nul 2>&1
+    if !errorlevel! equ 0 (
+        echo ✓ Processo %%a finalizado com sucesso
+    ) else (
+        echo ✗ Erro ao finalizar processo %%a
+    )
+)
+
+echo.
+echo ======================================
+echo Verificando se ainda há processos...
+echo ======================================
+
+REM Verificar se ainda há processos
+netstat -ano | findstr :%PORT% >nul
+if %errorlevel% equ 0 (
+    echo ⚠️  Ainda existem processos na porta %PORT%
+    netstat -ano | findstr :%PORT%
+) else (
+    echo ✅ Porta %PORT% está livre!
+)
+
+echo.
+echo ======================================
+echo           Finalizado
+echo ======================================
+echo Para usar: kill-server.bat [PORTA]
+echo Exemplo: kill-server.bat 3001
+echo.
+pause

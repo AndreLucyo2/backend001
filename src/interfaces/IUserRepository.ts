@@ -1,4 +1,4 @@
-import { User, CreateUserData, UpdateUserData } from '../types/UserTypes';
+import { User, CreateUserData, UpdateUserData, UserResponse } from '../types/UserTypes';
 
 // Contrato que define o que um UserRepository deve fazer
 export interface IUserRepository {
@@ -19,4 +19,7 @@ export interface IUserRepository {
 
     // Listar todos
     findAll(): Promise<User[]>;
+
+    // Listar todos (sem senha para resposta pública)
+    findAllPublic(): Promise<UserResponse[]>;
 }
