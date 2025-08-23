@@ -1,11 +1,12 @@
 {
   "name": "backend",
-  "version": "1.0.0",
+  "version": "1.0.0000",
   "description": "Modern Node.js REST API with TypeScript and Clean Architecture",
   "main": "dist/server.js",
   "scripts": {
     "start": "node dist/server.js",
     "dev": "nodemon src/server.ts",
+    "prebuild": "node src/scripts/generate-version.js",
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
     "kill-server": "powershell -Command \"Get-Process -Name node | Where-Object {$_.CommandLine -like '*server.ts*'} | Stop-Process -Force\"",
