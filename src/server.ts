@@ -25,6 +25,7 @@ setupDatabase()
 
       console.log(`Servidor iniciado na versão ${APP_VERSION}`);
       console.log(`Server is running on port ${port}`);
+      console.log(`CTRL+C to end running server`);
       
     });
   })
