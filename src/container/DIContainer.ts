@@ -5,7 +5,6 @@ import { AuthService } from '../services/auth.service';
 import { AuthController } from '../controllers/auth.controller';
 import { UserService } from '../services/user.service';
 import { UserController } from '../controllers/user.controller';
-
 import { PersonService } from '../services/person.service';
 import { PersonController } from '../controllers/person.controller';
 import { PersonRepository } from '../repositories/person.repository';

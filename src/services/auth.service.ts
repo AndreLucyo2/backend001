@@ -19,6 +19,8 @@ export class AuthService {
       throw new Error('Email already exists');
     }
 
+    //TODO - implementar camada de validações para login
+
     // Criar usuário (senha será hasheada pelo hook do modelo)
     const user = await this.userRepository.create(userData);
 

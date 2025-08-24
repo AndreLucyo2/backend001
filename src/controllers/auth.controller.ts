@@ -9,7 +9,7 @@ export class AuthController {
     register: [
       body('name').notEmpty().trim(),
       body('email').isEmail().normalizeEmail(),
-      body('password').isLength({ min: 6 }),
+      body('password').isLength({ min: 3 }),
     ],
     login: [
       body('email').isEmail().normalizeEmail(),

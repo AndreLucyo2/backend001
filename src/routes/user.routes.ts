@@ -9,7 +9,7 @@ export const userRouter = Router();
 const userController = DIContainer.createUserController();
 
 userRouter.post(
-    '/register', 
+    '/register',
     authMiddleware,
     UserController.validations.register,
     async (req: Request, res: Response, next: NextFunction) => {
@@ -22,7 +22,7 @@ userRouter.post(
 );
 
 userRouter.patch(
-    '/deactivate', 
+    '/deactivate',
     authMiddleware,
     async (req: Request, res: Response, next: NextFunction) => {
         try {
@@ -33,8 +33,20 @@ userRouter.patch(
     }
 );
 
+userRouter.patch(
+    '/activate',
+    authMiddleware,
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            await userController.activate(req, res);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
 userRouter.get(
-    '/list', 
+    '/list',
     authMiddleware,
     async (req: Request, res: Response, next: NextFunction) => {
         try {

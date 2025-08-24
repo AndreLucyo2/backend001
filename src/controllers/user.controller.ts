@@ -8,7 +8,7 @@ export class UserController {
     public static validations = {
         register: [
             body('email').isEmail().normalizeEmail(),
-            body('password').isLength({ min: 6 }),
+            body('password').isLength({ min: 3 }),
             body('name').trim().notEmpty(),
         ],
     };
@@ -16,6 +16,7 @@ export class UserController {
     public register = async (req: Request, res: Response): Promise<Response> => {
         try {
             const errors = validationResult(req);
+
             if (!errors.isEmpty()) {
                 return res.status(400).json({ errors: errors.array() });
             }
@@ -25,10 +26,12 @@ export class UserController {
 
             return res.status(201).json({
                 message: 'User registered successfully',
+                success: true,
                 user: user, // Já retorna UserResponse sem senha
             });
+
         } catch (error: any) {
-            return res.status(400).json({ message: error.message });
+            return res.status(400).json({ message: error.message, success: false });
         }
     }
 
@@ -36,7 +39,27 @@ export class UserController {
         try {
             const { uid } = req.body;
             await this.userService.deactivateUser(uid);
-            return res.status(200).json({ message: 'User deactivated successfully' });
+
+            return res.status(200).json({
+                message: 'User deactivated successfully',
+                success: true,
+            });
+
+        } catch (error: any) {
+            return res.status(400).json({ message: error.message });
+        }
+    }
+
+    public activate = async (req: Request, res: Response): Promise<Response> => {
+        try {
+            const { uid } = req.body;
+            await this.userService.activateUser(uid);
+
+            return res.status(200).json({
+                message: 'User activated successfully',
+                success: true,
+            });
+
         } catch (error: any) {
             return res.status(400).json({ message: error.message });
         }
@@ -45,11 +68,16 @@ export class UserController {
     public list = async (req: Request, res: Response): Promise<Response> => {
         try {
             const { name, email } = req.query;
-            const users = await this.userService.listUsers({ 
-                name: name as string, 
-                email: email as string 
+            const users = await this.userService.listUsers({
+                name: name as string,
+                email: email as string
             });
-            return res.status(200).json(users); // Já retorna UserResponse[] sem senhas
+            return res.status(201).json({
+                message: 'success',
+                success: true,
+                content: users, // Já retorna UserResponse[] sem senhas
+            });
+
         } catch (error: any) {
             return res.status(400).json({ message: error.message });
         }

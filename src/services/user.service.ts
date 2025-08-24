@@ -41,11 +41,23 @@ export class UserService {
         await this.userRepository.update(uid, updateData);
     }
 
+    public async activateUser(uid: string): Promise<void> {
+        // Verificar se usuário existe
+        const user = await this.userRepository.findByUid(uid);
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        // Ativar usuário
+        const updateData: UpdateUserData = { isActive: true };
+        await this.userRepository.update(uid, updateData);
+    }
+
     public async listUsers(query: { name?: string; email?: string }): Promise<UserResponse[]> {
         // Por enquanto, retorna todos
         return await this.userRepository.findAllPublic();
-        
-        // TODO: Implementar filtros por name/email no repository
+
+        // TODO Implementar filtros por name/email no repository
         // if (query.name || query.email) {
         //     return await this.userRepository.findByFilters(query);
         // }
