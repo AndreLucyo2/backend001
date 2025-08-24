@@ -1,6 +1,5 @@
-import { Person } from '../models/person';
-import { User } from '../models/user';
-import { Op } from 'sequelize';
+import { IPersonRepository } from '../interfaces/IPersonRepository';
+import { CreatePersonData, UpdatePersonData, PersonResponse } from '../types/person.types';
 import {
   formatPhone,
   formatCPF,
@@ -10,70 +9,59 @@ import {
 } from '../utils/utilis';
 
 export class PersonService {
+  constructor(private personRepository: IPersonRepository) { }
+
   /**
-   * Criar uma nova pessoa com validações de negócio
-   * e registrar quem fez o cadastro (createdByUserUid)
-   */
-  static async createPerson(personData: any, createdByUserUid?: string) {
+ * Criar uma nova pessoa com validações de negócio
+ * e registrar quem fez o cadastro (createdByUserUid)
+ */
+  async createPerson(personData: CreatePersonData, createdByUserUid: string): Promise<PersonResponse> {
 
-    // Regra de negócio: nunca ambos 
-    if ((personData.cpf && personData.cnpj)) {
-      throw new Error('Informe apenas CPF ou CNPJ');
-    }
-
-    // Regra de negócio: Deve ter CPF ou CNPJ,
-    if (!personData.cpf && !personData.cnpj) {      
+    // Regra de negócio: quando CPF ou CNPJ for obrigatório
+    if (!personData.document) {
       throw new Error('Informe um documento (CPF ou CNPJ).');
     }
 
-    // Formatação e validação de CPF
-    if (personData.cpf) {
-      personData.cpf = formatCPF(personData.cpf);
-      if (!validateCPF(personData.cpf)) {
-        throw new Error('CPF inválido');
+    // Validar CPF/cnpj e formato se informado
+    if (personData.document) {
+
+      // Validar CPF / CNPJ único por cadastro
+      const existingPerson = await this.personRepository.findByDocument(personData.document!);
+      if (existingPerson) {
+        throw new Error('Documento already registered (cpf/cnpj)');
+      }
+
+      if (personData.document.length === 11) {
+        // Formatação e validação de CPF
+        personData.document = formatCPF(personData.document);
+        if (!validateCPF(personData.document)) {
+          throw new Error('CPF inválido');
+        }
+      }
+      else if (personData.document.length === 14) {
+        // Formatação e validação de CNPJ
+        personData.document = formatCNPJ(personData.document);
+        if (!validateCNPJ(personData.document)) {
+          throw new Error('CNPJ inválido');
+        }
+
+      } else {
+        throw new Error('Documento deve ser CPF (11 dígitos) ou CNPJ (14 dígitos)');
       }
     }
 
-    // Formatação e validação de CNPJ
-    if (personData.cnpj) {
-      personData.cnpj = formatCNPJ(personData.cnpj);
-      if (!validateCNPJ(personData.cnpj)) {
-        throw new Error('CNPJ inválido');
-      }
+    // Formatação e validação de telefone
+    if (personData.phone) {
+      personData.phone = formatPhone(personData.phone);
     }
 
-    // Validação de CPF ou CNPF único
-    if (personData.cnpj || personData.cpf) {
-      const existingCnpj = await Person.findOne({
-        where: { cnpj: personData.cnpj }
-      });
-      if (existingCnpj && existingCnpj.uid !== personData.uid) {
-        throw new Error('CNPJ já cadastrado para outra pessoa');
+    //Validação caso for email único
+    if (personData.email) {
+      const existingPerson = await this.personRepository.findByEmail(personData.email!);
+      if (existingPerson) {
+        throw new Error('Email já cadastrado para outra pessoa');
       }
-
-      const existingCpf = await Person.findOne({
-        where: { cpf: personData.cpf }
-      });
-      if (existingCpf && existingCpf.uid !== personData.uid) {
-        throw new Error('CPF já cadastrado para outra pessoa');
-      }
-
-      // Formatação e validação de telefone
-      if (personData.phone) {
-        personData.phone = formatPhone(personData.phone);
-      }
-
     }
-
-    // Validação de email único
-    // if (personData.email) {
-    //   const existingPerson = await Person.findOne({
-    //     where: { email: personData.email }
-    //   });
-    //   if (existingPerson) {
-    //     throw new Error('Email já cadastrado para outra pessoa');
-    //   }
-    // }
 
     //Registra quem criou a pessoa
     if (createdByUserUid) {
@@ -84,29 +72,56 @@ export class PersonService {
     personData.createdAt = new Date();
     personData.updatedAt = new Date();
 
-    return await Person.create(personData);
+    const person = await this.personRepository.create(personData as any);
+    return this.mapToResponse(person);
+
   }
 
-  /**
-   * Atualizar pessoa com validações de negócio
-   */
-  static async updatePerson(uid: string, updateData: any, updatedByUserUid?: string) {
-    const person = await Person.findByPk(uid);
+  async getPersonByUid(uid: string): Promise<PersonResponse> {
+    const person = await this.personRepository.findByUid(uid);
     if (!person) {
-      throw new Error('Pessoa não encontrada');
+      throw new Error('Person not found');
+    }
+    return this.mapToResponse(person);
+  }
+
+  async updatePerson(uid: string, updateData: UpdatePersonData, updatedByUserUid: string): Promise<PersonResponse> {
+    // Verificar se existe
+    const person = await this.getPersonByUid(uid);
+    if (!person) {
+      throw new Error('Person not found');
     }
 
-    // Não permitir alterar CPF/CNPJ se já existir
-    if (updateData.cpf && person.cpf && updateData.cpf !== person.cpf) {
-      throw new Error('CPF não pode ser alterado após cadastro');
-    }
-    if (updateData.cnpj && person.cnpj && updateData.cnpj !== person.cnpj) {
-      throw new Error('CNPJ não pode ser alterado após cadastro');
-    }
+    // Verificar CPF único se estiver sendo alterado
+    if (updateData.document) {
 
-    // Não permitir adicionar CPF se já existe CNPJ e vice-versa
-    if ((updateData.cpf && person.cnpj) || (updateData.cnpj && person.cpf)) {
-      throw new Error('Não é permitido adicionar CPF a quem já possui CNPJ e vice-versa');
+      // Validar CPF / CNPJ único por cadastro
+      const existingPerson = await this.personRepository.findByDocument(updateData.document);
+      if (existingPerson && existingPerson.uid !== uid) {
+        throw new Error('Documento already registered (cpf/cnpj)');
+      }
+
+      // Validar CPF/cnpj e formato se informado
+      if (updateData.document) {
+        if (updateData.document.length === 11) {
+          // Formatação e validação de CPF
+          updateData.document = formatCPF(updateData.document);
+          if (!validateCPF(updateData.document)) {
+            throw new Error('CPF inválido');
+          }
+        }
+        else if (updateData.document.length === 14) {
+          // Formatação e validação de CNPJ
+          updateData.document = formatCNPJ(updateData.document);
+          if (!validateCNPJ(updateData.document)) {
+            throw new Error('CNPJ inválido');
+          }
+
+        } else {
+          throw new Error('Documento deve ser CPF (11 dígitos) ou CNPJ (14 dígitos)');
+        }
+      }
+
     }
 
     // Formatação e validação de telefone
@@ -114,142 +129,202 @@ export class PersonService {
       updateData.phone = formatPhone(updateData.phone);
     }
 
-    // Formatação e validação de CPF
-    if (updateData.cpf) {
-      updateData.cpf = formatCPF(updateData.cpf);
-      if (!validateCPF(updateData.cpf)) {
-        throw new Error('CPF inválido');
-      }
-    }
-
-    // Formatação e validação de CNPJ
-    if (updateData.cnpj) {
-      updateData.cnpj = formatCNPJ(updateData.cnpj);
-      if (!validateCNPJ(updateData.cnpj)) {
-        throw new Error('CNPJ inválido');
-      }
-    }
-
-    updateData.updatedAt = new Date();
-
     // Registra quem fez a última alteração
     if (updatedByUserUid) {
       updateData.updatedByUserUid = updatedByUserUid;
     }
 
-    await Person.update(updateData, { where: { uid } });
-    return await Person.findByPk(uid);
+    updateData.updatedAt = new Date();
+
+    const updatedPerson = await this.personRepository.update(uid, updateData);
+    return this.mapToResponse(updatedPerson);
   }
 
   /**
-   * Buscar pessoa com relacionamentos
-   */
-  static async getPersonWithRelations(uid: string) {
-    const person = await Person.findByPk(uid, {
-      include: [
-        {
-          model: User,
-          as: 'user',
-          attributes: ['uid', 'name', 'email']
-        }
-      ]
-    });
-
-    if (!person) {
-      throw new Error('Pessoa não encontrada');
-    }
-
-    return person;
-  }
-
-  /**
-   * Listar pessoas com filtros e paginação
-   */
-  static async listPersons(filters: any = {}, page: number = 1, limit: number = 10) {
-    const offset = (page - 1) * limit;
-
-    const whereClause: any = {};
-
-    // Regra de negócio: Filtros inteligentes
-    if (filters.name) {
-      whereClause.name = { [Op.iLike]: `%${filters.name}%` };
-    }
-
-    if (filters.email) {
-      whereClause.email = { [Op.iLike]: `%${filters.email}%` };
-    }
-
-    if (filters.cpf) {
-      whereClause.cpf = formatCPF(filters.cpf);
-    }
-
-    if (filters.cnpj) {
-      whereClause.cnpj = formatCNPJ(filters.cnpj);
-    }
-
-    const { count, rows } = await Person.findAndCountAll({
-      where: whereClause,
-      limit,
-      offset,
-      order: [['createdAt', 'DESC']]
-    });
-
-    return {
-      persons: rows,
-      pagination: {
-        page,
-        limit,
-        total: count,
-        totalPages: Math.ceil(count / limit)
-      }
-    };
-  }
-
-  /**
-   * Vincular uma pessoa com um usuário (1:1) - dados pessoais do usuário
-   */
-  static async linkPersonToUser(personUid: string, userUid: string) {
-    const person = await Person.findByPk(personUid);
-    const user = await User.findByPk(userUid);
-
-    if (!person) {
-      throw new Error('Pessoa não encontrada');
-    }
-
-    if (!user) {
-      throw new Error('Usuário não encontrado');
-    }
-
-    // Verifica se essa pessoa já está vinculada a outro usuário
-    const existingUser = await User.findOne({
-      where: { personUid: personUid, uid: { [Op.ne]: userUid } }
-    });
-    if (existingUser) {
-      throw new Error('Esta pessoa já está vinculada a outro usuário');
-    }
-
-    // Atualiza o usuário para apontar para a pessoa
-    await user.update({ personUid: personUid });
-    return user;
-  }
-
-  /**
-   * Inativar uma pessoa (define active como false)
-   */
-  static async inactivatePerson(uid: string): Promise<boolean> {
-    const person = await Person.findByPk(uid);
-    if (!person) {
-      return false;
-    }
-    await person.update({ active: false, updatedAt: new Date() });
+ * Deletar uma pessoa
+ */
+  async deletePerson(uid: string): Promise<boolean> {
+    const deleted = await this.personRepository.delete(uid);
     return true;
   }
 
-  /**
-   * Deletar uma pessoa
-   */
-  static async deletePerson(uid: string): Promise<boolean> {
-    const deleted = await Person.destroy({ where: { uid } });
-    return deleted > 0;
+  async deactivatePerson(uid: string, updatedByUserUid: string): Promise<boolean> {
+    // Verificar se pessoa existe
+    const user = await this.personRepository.findByUid(uid);
+    if (!user) {
+      throw new Error('Person not found');
+    }
+
+    const updateData: UpdatePersonData = {
+      isActive: false,
+      updatedByUserUid: updatedByUserUid,
+      updatedAt: new Date()
+    };
+
+    await this.personRepository.update(uid, updateData);
+    return true;
   }
+
+  async activatePerson(uid: string, updatedByUserUid: string): Promise<boolean> {
+    // Verificar se pessoa existe
+    const user = await this.personRepository.findByUid(uid);
+    if (!user) {
+      throw new Error('Person not found');
+    }
+
+    const updateData: UpdatePersonData = {
+      isActive: true,
+      updatedByUserUid: updatedByUserUid,
+      updatedAt: new Date()
+    };
+
+    await this.personRepository.update(uid, updateData);
+    return true;
+
+  }
+
+  async listPersons(): Promise<PersonResponse[]> {
+    return await this.personRepository.findAllPublic();
+  }
+
+  async searchPersons(name: string): Promise<PersonResponse[]> {
+    return await this.personRepository.findByName(name);
+  }
+
+  private mapToResponse(person: any): PersonResponse {
+    return {
+      uid: person.uid,
+      firstName: person.firstName,
+      lastName: person.lastName,
+      fullName: `${person.firstName} ${person.lastName}`,
+      birthDate: person.birthDate,
+      address: person.address,
+      isActive: person.isActive,
+      createdAt: person.createdAt,
+      updatedAt: person.updatedAt
+    };
+  }
+
 }
+
+// import { Person } from '../models/person';
+// import { User } from '../models/user';
+// import { Op } from 'sequelize';
+// import {
+//   formatPhone,
+//   formatCPF,
+//   formatCNPJ,
+//   validateCPF,
+//   validateCNPJ
+// } from '../utils/utilis';
+
+// export class PersonService {
+
+
+
+//   /**
+//    * Buscar pessoa com relacionamentos
+//    */
+//   static async getPersonWithRelations(uid: string) {
+//     const person = await Person.findByPk(uid, {
+//       include: [
+//         {
+//           model: User,
+//           as: 'user',
+//           attributes: ['uid', 'name', 'email']
+//         }
+//       ]
+//     });
+
+//     if (!person) {
+//       throw new Error('Pessoa não encontrada');
+//     }
+
+//     return person;
+//   }
+
+//   /**
+//    * Listar pessoas com filtros e paginação
+//    */
+//   static async listPersons(filters: any = {}, page: number = 1, limit: number = 10) {
+//     const offset = (page - 1) * limit;
+
+//     const whereClause: any = {};
+
+//     // Regra de negócio: Filtros inteligentes
+//     if (filters.name) {
+//       whereClause.name = { [Op.iLike]: `%${filters.name}%` };
+//     }
+
+//     if (filters.email) {
+//       whereClause.email = { [Op.iLike]: `%${filters.email}%` };
+//     }
+
+//     if (filters.cpf) {
+//       whereClause.cpf = formatCPF(filters.cpf);
+//     }
+
+//     if (filters.cnpj) {
+//       whereClause.cnpj = formatCNPJ(filters.cnpj);
+//     }
+
+//     const { count, rows } = await Person.findAndCountAll({
+//       where: whereClause,
+//       limit,
+//       offset,
+//       order: [['createdAt', 'DESC']]
+//     });
+
+//     return {
+//       persons: rows,
+//       pagination: {
+//         page,
+//         limit,
+//         total: count,
+//         totalPages: Math.ceil(count / limit)
+//       }
+//     };
+//   }
+
+//   /**
+//    * Vincular uma pessoa com um usuário (1:1) - dados pessoais do usuário
+//    */
+//   static async linkPersonToUser(personUid: string, userUid: string) {
+//     const person = await Person.findByPk(personUid);
+//     const user = await User.findByPk(userUid);
+
+//     if (!person) {
+//       throw new Error('Pessoa não encontrada');
+//     }
+
+//     if (!user) {
+//       throw new Error('Usuário não encontrado');
+//     }
+
+//     // Verifica se essa pessoa já está vinculada a outro usuário
+//     const existingUser = await User.findOne({
+//       where: { personUid: personUid, uid: { [Op.ne]: userUid } }
+//     });
+//     if (existingUser) {
+//       throw new Error('Esta pessoa já está vinculada a outro usuário');
+//     }
+
+//     // Atualiza o usuário para apontar para a pessoa
+//     await user.update({ personUid: personUid });
+//     return user;
+//   }
+
+//   /**
+//    * Inativar uma pessoa (define active como false)
+//    */
+//   static async inactivatePerson(uid: string): Promise<boolean> {
+//     const person = await Person.findByPk(uid);
+//     if (!person) {
+//       return false;
+//     }
+//     await person.update({ active: false, updatedAt: new Date() });
+//     return true;
+//   }
+
+
+// }

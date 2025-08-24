@@ -6,6 +6,11 @@ import { AuthController } from '../controllers/auth.controller';
 import { UserService } from '../services/user.service';
 import { UserController } from '../controllers/user.controller';
 
+import { PersonService } from '../services/person.service';
+import { PersonController } from '../controllers/person.controller';
+import { PersonRepository } from '../repositories/person.repository';
+import { IPersonRepository } from '../interfaces/IPersonRepository';
+
 // Centraliza criação de objetos e suas dependências
 // DIContainer significa Dependency Injection Container.
 export class DIContainer {
@@ -44,4 +49,25 @@ export class DIContainer {
         const userService = this.createUserService();
         return new UserController(userService);
     }
+
+    // Singleton: uma instância do repository para toda aplicação
+    private static personRepositoryInstance: IPersonRepository;
+
+    static getPersonRepository(): IPersonRepository {
+        if (!this.personRepositoryInstance) {
+            this.personRepositoryInstance = new PersonRepository();
+        }
+        return this.personRepositoryInstance;
+    }
+
+    static createPersonService(): PersonService {
+        const personRepository = this.getPersonRepository();
+        return new PersonService(personRepository);
+    }
+
+    static createPersonController(): PersonController {
+        const personService = this.createPersonService();
+        return new PersonController(personService);
+    }
+
 }

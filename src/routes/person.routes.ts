@@ -1,15 +1,18 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { PersonController } from '../controllers/person.controller';
 import { authMiddleware } from '../middleware/auth.middleware';
+import { DIContainer } from '../container/DIContainer';
 
 export const personRoutes = Router();
+
+// Criar instância do controller usando Dependency Injection
+const personController = DIContainer.createPersonController();
 
 personRoutes.post(
     '/create',
     authMiddleware,
     async (req: Request, res: Response, next: NextFunction) => {
         try {
-            await PersonController.create(req, res);
+            await personController.create(req, res);
         } catch (error) {
             next(error);
         }
@@ -21,7 +24,7 @@ personRoutes.get(
     authMiddleware,
     async (req: Request, res: Response, next: NextFunction) => {
         try {
-            await PersonController.list(req, res);
+            await personController.list(req, res);
         } catch (error) {
             next(error);
         }
@@ -33,7 +36,7 @@ personRoutes.get(
     authMiddleware,
     async (req: Request, res: Response, next: NextFunction) => {
         try {
-            await PersonController.getByUid(req, res);
+            await personController.getByUid(req, res);
         } catch (error) {
             next(error);
         }
@@ -45,7 +48,7 @@ personRoutes.put(
     authMiddleware,
     async (req: Request, res: Response, next: NextFunction) => {
         try {
-            await PersonController.update(req, res);
+            await personController.update(req, res);
         } catch (error) {
             next(error);
         }
@@ -57,7 +60,7 @@ personRoutes.delete(
     authMiddleware,
     async (req: Request, res: Response, next: NextFunction) => {
         try {
-            await PersonController.delete(req, res);
+            await personController.delete(req, res);
         } catch (error) {
             next(error);
         }
