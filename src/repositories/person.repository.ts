@@ -1,7 +1,18 @@
-import { IPersonRepository } from '../interfaces/IPersonRepository';
-import { Person, CreatePersonData, UpdatePersonData, PersonResponse } from '../types/person.types';
+import {
+    Person,
+    CreatePersonData,
+    UpdatePersonData,
+    PersonResponse,
+    SearchPersonParams,
+    PersonSearchResult
+} from '../types/person.types';
 import { Person as PersonModel } from '../models/person';
+import { IPersonRepository } from '../interfaces/IPersonRepository';
 import { Op } from 'sequelize';
+import {
+    formatCPF,
+    formatCNPJ
+} from '../utils/utilis';
 
 export class PersonRepository implements IPersonRepository {
 
@@ -98,6 +109,134 @@ export class PersonRepository implements IPersonRepository {
         }
     }
 
+    /**
+    * Listar pessoas com filtros e paginação
+    */
+    // async searchPersons(
+    //     filters: any = {},
+    //     page: number = 1,
+    //     limit: number = 10
+    // ) {
+
+    //     const offset = (page - 1) * limit;
+
+    //     const whereClause: any = {};
+
+    //     // Regra de negócio: Filtros inteligentes
+    //     if (filters.name) {
+    //         whereClause.name = { [Op.iLike]: `%${filters.name}%` };
+    //     }
+
+    //     if (filters.email) {
+    //         whereClause.email = { [Op.iLike]: `%${filters.email}%` };
+    //     }
+
+    //     if (filters.cpf) {
+    //         whereClause.cpf = formatCPF(filters.cpf);
+    //     }
+
+    //     if (filters.cnpj) {
+    //         whereClause.cnpj = formatCNPJ(filters.cnpj);
+    //     }
+
+    //     const { count, rows } = await PersonModel.findAndCountAll({
+    //         where: whereClause,
+    //         limit,
+    //         offset,
+    //         order: [['createdAt', 'DESC']]
+    //     });
+
+    //     return {
+    //         persons: rows,
+    //         pagination: {
+    //             page,
+    //             limit,
+    //             total: count,
+    //             totalPages: Math.ceil(count / limit)
+    //         }
+    //     };
+    // }
+    async searchPersons(params: SearchPersonParams): Promise<PersonSearchResult> {
+        const {
+            name,
+            document,
+            email,
+            orderBy = 'name',
+            orderDirection = 'ASC',
+            page = 1,
+            limit = 10
+        } = params;
+
+        // Construir condições de busca
+        const where: any = {};
+
+        if (name) {
+            where.name = {
+                [Op.like]: `%${name}%`
+            };
+        }
+
+        if (document) {
+            where.document = {
+                [Op.like]: `%${document}%`
+            };
+        }
+
+        if (email) {
+            where.email = {
+                [Op.like]: `%${email}%`
+            };
+        }
+
+        // Calcular offset para paginação
+        const offset = (page - 1) * limit;
+
+        // Definir ordenação
+        const order: [string, string][] = [[orderBy, orderDirection]];
+
+        try {
+            // Executar busca com contagem total
+            const { count, rows } = await PersonModel.findAndCountAll({
+                where,
+                order,
+                limit,
+                offset,
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt'] // remover campos desnecessários se necessário
+                }
+            });
+
+            // Mapear os resultados para o tipo Person
+            const data: Person[] = rows.map((row: any) => ({
+                uid: row.uid,
+                name: row.name,
+                birthDate: row.birthDate,
+                document: row.document,
+                email: row.email,
+                phone: row.phone,
+                address: row.address,
+                isActive: row.isActive,
+                createdByUserUid: row.createdByUserUid,
+                createdAt: row.createdAt,
+                updatedByUserUid: row.updatedByUserUid,
+                updatedAt: row.updatedAt
+            }));
+
+            // Calcular total de páginas
+            const totalPages = Math.ceil(count / limit);
+
+            return {
+                data,
+                total: count,
+                page,
+                limit,
+                totalPages
+            };
+        } catch (error) {
+            throw new Error(`Erro ao buscar pessoas: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
+        }
+    }
+
     async findAllPublic(): Promise<PersonResponse[]> {
         try {
             const personModels = await PersonModel.findAll({
@@ -138,8 +277,7 @@ export class PersonRepository implements IPersonRepository {
     private mapToEntity(personModel: any): Person {
         return {
             uid: personModel.uid,
-            firstName: personModel.firstName,
-            lastName: personModel.lastName,
+            name: personModel.name,
             birthDate: personModel.birthDate,
             document: personModel.document,
             email: personModel.email,
@@ -157,9 +295,7 @@ export class PersonRepository implements IPersonRepository {
     private mapToPublicEntity(personModel: any): PersonResponse {
         return {
             uid: personModel.uid,
-            firstName: personModel.firstName,
-            lastName: personModel.lastName,
-            fullName: `${personModel.firstName} ${personModel.lastName}`,
+            name: personModel.name,
             birthDate: personModel.birthDate,
             address: personModel.address,
             isActive: personModel.isActive,

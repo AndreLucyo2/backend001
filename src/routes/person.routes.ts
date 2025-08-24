@@ -32,6 +32,18 @@ personRoutes.get(
 );
 
 personRoutes.get(
+    '/search',
+    authMiddleware,
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            await personController.searchPersons(req, res);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+personRoutes.get(
     '/:uid',
     authMiddleware,
     async (req: Request, res: Response, next: NextFunction) => {

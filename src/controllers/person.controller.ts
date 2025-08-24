@@ -1,9 +1,22 @@
 import { Request, Response } from 'express';
 import { PersonService } from '../services/person.service';
 import { body, validationResult } from 'express-validator';
+import {
+    Person,
+    CreatePersonData,
+    UpdatePersonData,
+    PersonResponse,
+    SearchPersonParams,
+    PersonSearchResult,
+    ApiResponse
+} from '../types/person.types';
 
 export class PersonController {
-    constructor(private personService: PersonService) { }
+    private personService: PersonService;
+
+    constructor(personService: PersonService) {
+        this.personService = personService;
+    }
 
     public static validations = {
         create: [
@@ -101,19 +114,62 @@ export class PersonController {
         }
     }
 
-    public search = async (req: Request, res: Response): Promise<Response> => {
+    public searchPersons = async (req: Request, res: Response): Promise<Response> => {
         try {
-            const { name } = req.query;
-            if (!name) {
-                return res.status(400).json({ message: 'Name parameter is required' });
-            }
+            // Extrair parâmetros da query string
+            const {
+                name,
+                document,
+                email,
+                phone,
+                orderBy,
+                orderDirection,
+                page,
+                limit
+            } = req.query;
 
-            const persons = await this.personService.searchPersons(name as string);
-            return res.json(persons);
-        } catch (error: any) {
-            return res.status(500).json({ message: error.message });
+            // Preparar parâmetros de busca
+            const searchParams: SearchPersonParams = {
+                ...(name && { name: String(name) }),
+                ...(document && { document: String(document) }),
+                ...(email && { email: String(email) }),
+                ...(phone && { phone: String(phone) }),
+                ...(orderBy && { orderBy: orderBy as 'name' | 'document' | 'email' | 'phone' }),
+                ...(orderDirection && { orderDirection: orderDirection as 'ASC' | 'DESC' }),
+                ...(page && { page: parseInt(String(page)) }),
+                ...(limit && { limit: parseInt(String(limit)) })
+            };
+
+            // Chamar service
+            const result = await this.personService.searchPersons(searchParams);
+
+            const response: ApiResponse<PersonSearchResult['data']> = {
+                success: true,
+                message: 'Busca realizada com sucesso',
+                data: result.data,
+                pagination: {
+                    total: result.total,
+                    page: result.page,
+                    limit: result.limit,
+                    totalPages: result.totalPages
+                }
+            };
+
+            return res.status(200).json(response);
+
+        } catch (error) {
+            console.error('Erro ao buscar pessoas:', error);
+
+            const errorResponse: ApiResponse = {
+                success: false,
+                message: error instanceof Error ? error.message : 'Erro interno do servidor',
+                data: null
+            };
+
+            return res.status(500).json(errorResponse);
         }
-    }
+    };
+
 }
 
 // import { Request, Response } from 'express';

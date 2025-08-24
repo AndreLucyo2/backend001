@@ -1,8 +1,7 @@
 // Entidade Person principal
 export interface Person {
     uid: string;
-    firstName: string;
-    lastName: string;
+    name: string;
     birthDate: Date | null;
     document: string;
     email: string;
@@ -17,8 +16,7 @@ export interface Person {
 
 // Para criação de pessoa
 export interface CreatePersonData {
-    firstName: string;
-    lastName?: string | null;
+    name: string;
     birthDate?: Date | null;
     document?: string | null; //CPF ou CNPJ 
     email?: string | null;
@@ -32,8 +30,7 @@ export interface CreatePersonData {
 
 // Para atualização (campos opcionais)
 export interface UpdatePersonData {
-    firstName?: string;
-    lastName?: string;
+    name?: string;
     birthDate?: Date | null;
     document?: string; //CPF ou CNPJ 
     phone?: string | null;
@@ -46,12 +43,45 @@ export interface UpdatePersonData {
 // Para resposta pública
 export interface PersonResponse {
     uid: string;
-    firstName: string;
-    lastName: string;
-    fullName: string; // computed field
+    name: string;
     birthDate: Date | null;
     address: string | null;
     isActive: boolean;
     createdAt: Date;
     updatedAt: Date;
+}
+
+// Tipo específico para busca (campos que você quer pesquisar)
+export interface SearchPersonParams {
+    name?: string;
+    document?: string;
+    email?: string;
+    phone?: string;
+    orderBy?: 'name'| 'document' | 'email' | 'phone';
+    orderDirection?: 'ASC' | 'DESC';
+    page?: number;
+    limit?: number;
+}
+
+export interface SearchResult<T> {
+    data: T[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+}
+
+export interface PersonSearchResult extends SearchResult<Person> { }
+
+// Tipo para resposta da API
+export interface ApiResponse<T = any> {
+    success: boolean;
+    message: string;
+    data: T | null;
+    pagination?: {
+        total: number;
+        page: number;
+        limit: number;
+        totalPages: number;
+    };
 }

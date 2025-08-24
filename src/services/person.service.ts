@@ -1,5 +1,12 @@
 import { IPersonRepository } from '../interfaces/IPersonRepository';
-import { CreatePersonData, UpdatePersonData, PersonResponse } from '../types/person.types';
+import {
+  Person,
+  CreatePersonData,
+  UpdatePersonData,
+  PersonResponse,
+  SearchPersonParams,
+  PersonSearchResult
+} from '../types/person.types';
 import {
   formatPhone,
   formatCPF,
@@ -9,7 +16,12 @@ import {
 } from '../utils/utilis';
 
 export class PersonService {
-  constructor(private personRepository: IPersonRepository) { }
+
+  private personRepository: IPersonRepository;
+
+  constructor(personRepository: IPersonRepository) {
+    this.personRepository = personRepository;
+  }
 
   /**
  * Criar uma nova pessoa com validações de negócio
@@ -187,16 +199,41 @@ export class PersonService {
     return await this.personRepository.findAllPublic();
   }
 
-  async searchPersons(name: string): Promise<PersonResponse[]> {
-    return await this.personRepository.findByName(name);
+  async searchPersons(params: SearchPersonParams): Promise<PersonSearchResult> {
+    try {
+      // Validações básicas
+      if (params.page && params.page < 1) {
+        throw new Error('Página deve ser maior que 0');
+      }
+
+      if (params.limit && (params.limit < 1 || params.limit > 100)) {
+        throw new Error('Limite deve estar entre 1 e 100');
+      }
+
+      // Validar orderBy
+      const validOrderFields = ['firstName', 'lastName', 'document', 'email', 'phone'];
+      if (params.orderBy && !validOrderFields.includes(params.orderBy)) {
+        throw new Error('Campo de ordenação inválido. Use: firstName, lastName, document, email ou phone');
+      }
+
+      // Validar orderDirection
+      if (params.orderDirection && !['ASC', 'DESC'].includes(params.orderDirection)) {
+        throw new Error('Direção de ordenação inválida. Use: ASC ou DESC');
+      }
+
+      // Chamar repository
+      const result = await this.personRepository.searchPersons(params);
+
+      return result;
+    } catch (error) {
+      throw new Error(`Erro no service ao buscar pessoas: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
+    }
   }
 
   private mapToResponse(person: any): PersonResponse {
     return {
       uid: person.uid,
-      firstName: person.firstName,
-      lastName: person.lastName,
-      fullName: `${person.firstName} ${person.lastName}`,
+      name: person.name,
       birthDate: person.birthDate,
       address: person.address,
       isActive: person.isActive,
@@ -243,48 +280,7 @@ export class PersonService {
 //     return person;
 //   }
 
-//   /**
-//    * Listar pessoas com filtros e paginação
-//    */
-//   static async listPersons(filters: any = {}, page: number = 1, limit: number = 10) {
-//     const offset = (page - 1) * limit;
 
-//     const whereClause: any = {};
-
-//     // Regra de negócio: Filtros inteligentes
-//     if (filters.name) {
-//       whereClause.name = { [Op.iLike]: `%${filters.name}%` };
-//     }
-
-//     if (filters.email) {
-//       whereClause.email = { [Op.iLike]: `%${filters.email}%` };
-//     }
-
-//     if (filters.cpf) {
-//       whereClause.cpf = formatCPF(filters.cpf);
-//     }
-
-//     if (filters.cnpj) {
-//       whereClause.cnpj = formatCNPJ(filters.cnpj);
-//     }
-
-//     const { count, rows } = await Person.findAndCountAll({
-//       where: whereClause,
-//       limit,
-//       offset,
-//       order: [['createdAt', 'DESC']]
-//     });
-
-//     return {
-//       persons: rows,
-//       pagination: {
-//         page,
-//         limit,
-//         total: count,
-//         totalPages: Math.ceil(count / limit)
-//       }
-//     };
-//   }
 
 //   /**
 //    * Vincular uma pessoa com um usuário (1:1) - dados pessoais do usuário
