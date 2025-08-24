@@ -1,6 +1,6 @@
 
 import { IUserRepository } from '../interfaces/IUserRepository';
-import { UserRepository } from '../repositories/userRepository';
+import { UserRepository } from '../repositories/user.repository';
 import { AuthService } from '../services/auth.service';
 import { AuthController } from '../controllers/auth.controller';
 import { UserService } from '../services/user.service';

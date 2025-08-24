@@ -1,5 +1,5 @@
 import { IUserRepository } from '../interfaces/IUserRepository';
-import { User, CreateUserData, UpdateUserData, UserResponse } from '../types/userTypes';
+import { User, CreateUserData, UpdateUserData, UserResponse } from '../types/user.types';
 import { User as UserModel } from '../models/user';
 
 export class UserRepository implements IUserRepository {
