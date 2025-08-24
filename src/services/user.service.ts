@@ -1,5 +1,5 @@
 import { IUserRepository } from '../interfaces/IUserRepository';
-import { CreateUserData, UserResponse, UpdateUserData } from '../types/UserTypes';
+import { CreateUserData, UserResponse, UpdateUserData } from '../types/userTypes';
 
 export class UserService {
     constructor(private userRepository: IUserRepository) { }

@@ -244,3 +244,34 @@ PS ***\projeto-IA-001\backend001> taskkill /F /PID 28608
 2. Em caso de erro, a API retornará status codes apropriados (400, 401, etc.) com mensagens descritivas
 3. Todas as senhas são automaticamente hasheadas antes de serem salvas no banco
 4. O banco SQLite é criado automaticamente no diretório raiz do projeto
+
+---
+
+### 📦 Padrões de Nomeação por Tipo de Arquivo
+
+| Tipo de Arquivo        | Padrão comum de nomeação     | Exemplo                          |
+|------------------------|------------------------------|----------------------------------|
+| **Roteadores**         | minúsculas + kebab-case      | `auth.routes.ts`                 |
+| **Middlewares**        | minúsculas + kebab-case      | `validate-token.middleware.ts`   |
+| **Repositórios**       | minúsculas + kebab-case      | `user.repository.ts`             |
+| **Interfaces**         | minúsculas + camelCase       | `iUserRepository.ts`             |
+| **Serviços**           | minúsculas + kebab-case      | `auth.service.ts`                |
+| **Controllers**        | minúsculas + kebab-case      | `user.controller.ts`             |
+| **Containers (DI)**    | minúsculas + kebab-case      | `user.container.ts` ou `di-container.ts` |
+| **Models (ORM/Schema)**| minúsculas + kebab-case      | `user.model.ts`                  |
+| **DTOs**               | minúsculas + kebab-case      | `create-user.dto.ts`             |
+| **Types**              | minúsculas + kebab-case      | `user.types.ts` ou `types.ts`    |
+| **Utils**              | minúsculas + kebab-case      | `date-format.util.ts`            |
+| **Configurações**      | minúsculas + kebab-case      | `database.config.ts`             |
+| **Scripts**            | minúsculas + kebab-case      | `seed-users.script.ts`           |
+| **Arquivos de entrada**| minúsculas + kebab-case      | `server.ts`, `version.ts`        |
+
+---
+
+### 🧠 Dicas para manter consistência
+
+- Use **kebab-case** para quase tudo, exceto interfaces (`iNomeInterface`) que costumam seguir **camelCase**.
+- Evite misturar estilos (como `UserService.ts` e `user.service.ts`) — escolha um padrão e siga com ele.
+- Se quiser agrupar arquivos por entidade, pode usar subpastas dentro de cada diretório (ex: `models/user.model.ts`, `models/person.model.ts`).
+
+---

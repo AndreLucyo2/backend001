@@ -1,4 +1,4 @@
-import { User, CreateUserData, UpdateUserData, UserResponse } from '../types/UserTypes';
+import { User, CreateUserData, UpdateUserData, UserResponse } from '../types/userTypes';
 
 // Contrato que define o que um UserRepository deve fazer
 export interface IUserRepository {
