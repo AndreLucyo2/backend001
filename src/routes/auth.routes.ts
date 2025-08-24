@@ -4,7 +4,7 @@ import { DIContainer } from '../container/DIContainer';
 
 export const authRouter = Router();
 
-// Criar instância do controller usando DI
+// Criar instância do controller usando Dependency Injection
 const authController = DIContainer.createAuthController();
 
 //Permite registrar novos usuários e fazer login

@@ -7,6 +7,7 @@ import { UserService } from '../services/user.service';
 import { UserController } from '../controllers/user.controller';
 
 // Centraliza criação de objetos e suas dependências
+// DIContainer significa Dependency Injection Container.
 export class DIContainer {
 
     // Singleton: uma instância do repository para toda aplicação

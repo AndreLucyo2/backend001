@@ -5,7 +5,7 @@ import { DIContainer } from '../container/DIContainer';
 
 export const userRouter = Router();
 
-// Criar instância do controller usando DI
+// Criar instância do controller usando Dependency Injection
 const userController = DIContainer.createUserController();
 
 userRouter.post(
