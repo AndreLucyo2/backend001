@@ -8,73 +8,73 @@ export const personRoutes = Router();
 const personController = DIContainer.createPersonController();
 
 personRoutes.post(
-    '/create',
-    authMiddleware,
-    async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            await personController.create(req, res);
-        } catch (error) {
-            next(error);
-        }
-    }
+	'/create',
+	authMiddleware,
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			await personController.create(req, res);
+		} catch (error) {
+			next(error);
+		}
+	}
 );
 
 personRoutes.get(
-    '/list',
-    authMiddleware,
-    async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            await personController.list(req, res);
-        } catch (error) {
-            next(error);
-        }
-    }
+	'/list',
+	authMiddleware,
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			await personController.list(req, res);
+		} catch (error) {
+			next(error);
+		}
+	}
 );
 
 personRoutes.get(
-    '/search',
-    authMiddleware,
-    async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            await personController.searchPersons(req, res);
-        } catch (error) {
-            next(error);
-        }
-    }
+	'/search',
+	authMiddleware,
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			await personController.searchPersons(req, res);
+		} catch (error) {
+			next(error);
+		}
+	}
 );
 
 personRoutes.get(
-    '/:uid',
-    authMiddleware,
-    async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            await personController.getByUid(req, res);
-        } catch (error) {
-            next(error);
-        }
-    }
+	'/:uid',
+	authMiddleware,
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			await personController.getByUid(req, res);
+		} catch (error) {
+			next(error);
+		}
+	}
 );
 
 personRoutes.put(
-    '/:uid',
-    authMiddleware,
-    async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            await personController.update(req, res);
-        } catch (error) {
-            next(error);
-        }
-    }
+	'/:uid',
+	authMiddleware,
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			await personController.update(req, res);
+		} catch (error) {
+			next(error);
+		}
+	}
 );
 
 personRoutes.delete(
-    '/:uid',
-    authMiddleware,
-    async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            await personController.delete(req, res);
-        } catch (error) {
-            next(error);
-        }
-    }
+	'/:uid',
+	authMiddleware,
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			await personController.delete(req, res);
+		} catch (error) {
+			next(error);
+		}
+	}
 );

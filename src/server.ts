@@ -20,16 +20,14 @@ setupRoutes(app);
 
 // Database initialization
 setupDatabase()
-.then(() => {
-  app.listen(port, () => {
-
-      console.log(`Servidor iniciado na versão ${APP_VERSION}`);
-      console.log(`Server is running on port ${port}`);
-      console.log(`CTRL+C to end running server`);
-      
-    });
-  })
-  .catch((error) => {
-    console.error('Failed to initialize database:', error);
-    process.exit(1);
-  });
+	.then(() => {
+		app.listen(port, () => {
+			console.log(`Servidor iniciado na versão ${APP_VERSION}`);
+			console.log(`Server is running on port ${port}`);
+			console.log(`CTRL+C to end running server`);
+		});
+		
+	}).catch((error) => {
+		console.error('Failed to initialize database:', error);
+		process.exit(1);
+	});

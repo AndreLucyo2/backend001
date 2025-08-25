@@ -9,50 +9,50 @@ export const userRouter = Router();
 const userController = DIContainer.createUserController();
 
 userRouter.post(
-    '/register',
-    authMiddleware,
-    UserController.validations.register,
-    async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            await userController.register(req, res);
-        } catch (error) {
-            next(error);
-        }
-    }
+	'/register',
+	authMiddleware,
+	UserController.validations.register,
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			await userController.register(req, res);
+		} catch (error) {
+			next(error);
+		}
+	}
 );
 
 userRouter.patch(
-    '/deactivate',
-    authMiddleware,
-    async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            await userController.deactivate(req, res);
-        } catch (error) {
-            next(error);
-        }
-    }
+	'/deactivate',
+	authMiddleware,
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			await userController.deactivate(req, res);
+		} catch (error) {
+			next(error);
+		}
+	}
 );
 
 userRouter.patch(
-    '/activate',
-    authMiddleware,
-    async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            await userController.activate(req, res);
-        } catch (error) {
-            next(error);
-        }
-    }
+	'/activate',
+	authMiddleware,
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			await userController.activate(req, res);
+		} catch (error) {
+			next(error);
+		}
+	}
 );
 
 userRouter.get(
-    '/list',
-    authMiddleware,
-    async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            await userController.list(req, res);
-        } catch (error) {
-            next(error);
-        }
-    }
+	'/list',
+	authMiddleware,
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			await userController.list(req, res);
+		} catch (error) {
+			next(error);
+		}
+	}
 );

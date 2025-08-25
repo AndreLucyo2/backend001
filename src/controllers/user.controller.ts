@@ -3,7 +3,11 @@ import { UserService } from '../services/user.service';
 import { body, validationResult } from 'express-validator';
 
 export class UserController {
-    constructor(private userService: UserService) { }
+    private userService: UserService;
+
+    constructor(userService: UserService) {
+        this.userService = userService;
+    }
 
     public static validations = {
         register: [

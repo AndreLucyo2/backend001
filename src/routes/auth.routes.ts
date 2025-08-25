@@ -9,25 +9,25 @@ const authController = DIContainer.createAuthController();
 
 //Permite registrar novos usuários e fazer login
 authRouter.post(
-  '/register',
-  AuthController.validations.register,
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      await authController.register(req, res);
-    } catch (error) {
-      next(error);
-    }
-  }
+	'/register',
+	AuthController.validations.register,
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			await authController.register(req, res);
+		} catch (error) {
+			next(error);
+		}
+	}
 );
 
 authRouter.post(
-  '/login',
-  AuthController.validations.login,
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      await authController.login(req, res);
-    } catch (error) {
-      next(error);
-    }
-  }
+	'/login',
+	AuthController.validations.login,
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			await authController.login(req, res);
+		} catch (error) {
+			next(error);
+		}
+	}
 );

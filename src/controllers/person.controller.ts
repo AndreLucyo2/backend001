@@ -2,173 +2,173 @@ import { Request, Response } from 'express';
 import { PersonService } from '../services/person.service';
 import { body, validationResult } from 'express-validator';
 import {
-    Person,
-    CreatePersonData,
-    UpdatePersonData,
-    PersonResponse,
-    SearchPersonParams,
-    PersonSearchResult,
-    ApiResponse
+	Person,
+	CreatePersonData,
+	UpdatePersonData,
+	PersonResponse,
+	SearchPersonParams,
+	PersonSearchResult,
+	ApiResponse
 } from '../types/person.types';
 
 export class PersonController {
-    private personService: PersonService;
+	private personService: PersonService;
 
-    constructor(personService: PersonService) {
-        this.personService = personService;
-    }
+	constructor(personService: PersonService) {
+		this.personService = personService;
+	}
 
-    public static validations = {
-        create: [
-            body('firstName').notEmpty().trim(),
-            body('lastName').notEmpty().trim(),
-            body('document').isLength({ min: 11, max: 14 }).isNumeric(),
-            body('birthDate').optional().isISO8601(),
-            body('phone').optional().trim(),
-            body('address').optional().trim(),
-        ],
-        update: [
-            body('firstName').optional().trim(),
-            body('lastName').optional().trim(),
-            body('document').optional().isLength({ min: 11, max: 14 }).isNumeric(),
-            body('birthDate').optional().isISO8601(),
-            body('phone').optional().trim(),
-            body('address').optional().trim(),
-        ]
-    };
+	public static validations = {
+		create: [
+			body('firstName').notEmpty().trim(),
+			body('lastName').notEmpty().trim(),
+			body('document').isLength({ min: 11, max: 14 }).isNumeric(),
+			body('birthDate').optional().isISO8601(),
+			body('phone').optional().trim(),
+			body('address').optional().trim(),
+		],
+		update: [
+			body('firstName').optional().trim(),
+			body('lastName').optional().trim(),
+			body('document').optional().isLength({ min: 11, max: 14 }).isNumeric(),
+			body('birthDate').optional().isISO8601(),
+			body('phone').optional().trim(),
+			body('address').optional().trim(),
+		]
+	};
 
-    public create = async (req: Request, res: Response): Promise<Response> => {
-        try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array() });
-            }
+	public create = async (req: Request, res: Response): Promise<Response> => {
+		try {
+			const errors = validationResult(req);
+			if (!errors.isEmpty()) {
+				return res.status(400).json({ errors: errors.array() });
+			}
 
-            const person = await this.personService.createPerson(req.body, req.user?.uid ?? "");
-            return res.status(201).json({
-                message: 'Person created successfully',
-                person
-            });
-        } catch (error: any) {
-            return res.status(400).json({ message: error.message });
-        }
-    }
+			const person = await this.personService.createPerson(req.body, req.user?.uid ?? "");
+			return res.status(201).json({
+				message: 'Person created successfully',
+				person
+			});
+		} catch (error: any) {
+			return res.status(400).json({ message: error.message });
+		}
+	}
 
-    public getByUid = async (req: Request, res: Response): Promise<Response> => {
-        try {
-            const { uid } = req.params;
-            const person = await this.personService.getPersonByUid(uid);
-            return res.json(person);
-        } catch (error: any) {
-            return res.status(404).json({ message: error.message });
-        }
-    }
+	public getByUid = async (req: Request, res: Response): Promise<Response> => {
+		try {
+			const { uid } = req.params;
+			const person = await this.personService.getPersonByUid(uid);
+			return res.json(person);
+		} catch (error: any) {
+			return res.status(404).json({ message: error.message });
+		}
+	}
 
-    public update = async (req: Request, res: Response): Promise<Response> => {
-        try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array() });
-            }
+	public update = async (req: Request, res: Response): Promise<Response> => {
+		try {
+			const errors = validationResult(req);
+			if (!errors.isEmpty()) {
+				return res.status(400).json({ errors: errors.array() });
+			}
 
-            const { uid } = req.params;
-            const person = await this.personService.updatePerson(uid, req.body, req.user?.uid ?? "");
-            return res.json({
-                message: 'Person updated successfully',
-                person
-            });
-        } catch (error: any) {
-            return res.status(400).json({ message: error.message });
-        }
-    }
+			const { uid } = req.params;
+			const person = await this.personService.updatePerson(uid, req.body, req.user?.uid ?? "");
+			return res.json({
+				message: 'Person updated successfully',
+				person
+			});
+		} catch (error: any) {
+			return res.status(400).json({ message: error.message });
+		}
+	}
 
-    public async delete(req: Request, res: Response): Promise<void> {
-        try {
-            const deleted = await this.personService.deletePerson(req.params.uid);
-            if (!deleted) {
-                res.status(404).json({ error: 'Person not found' });
-                return;
-            }
-            res.status(204).send();
-        } catch (error: any) {
-            res.status(500).json({ error: 'Failed to delete person', message: error.message });
-        }
-    }
+	public async delete(req: Request, res: Response): Promise<void> {
+		try {
+			const deleted = await this.personService.deletePerson(req.params.uid);
+			if (!deleted) {
+				res.status(404).json({ error: 'Person not found' });
+				return;
+			}
+			res.status(204).send();
+		} catch (error: any) {
+			res.status(500).json({ error: 'Failed to delete person', message: error.message });
+		}
+	}
 
-    public deactivate = async (req: Request, res: Response): Promise<Response> => {
-        try {
-            const { uid } = req.params;
-            await this.personService.deactivatePerson(uid, req.user?.uid ?? "");
-            return res.json({ message: 'Person deactivated successfully' });
-        } catch (error: any) {
-            return res.status(400).json({ message: error.message });
-        }
-    }
+	public deactivate = async (req: Request, res: Response): Promise<Response> => {
+		try {
+			const { uid } = req.params;
+			await this.personService.deactivatePerson(uid, req.user?.uid ?? "");
+			return res.json({ message: 'Person deactivated successfully' });
+		} catch (error: any) {
+			return res.status(400).json({ message: error.message });
+		}
+	}
 
-    public list = async (req: Request, res: Response): Promise<Response> => {
-        try {
-            const persons = await this.personService.listPersons();
-            return res.json(persons);
-        } catch (error: any) {
-            return res.status(500).json({ message: error.message });
-        }
-    }
+	public list = async (req: Request, res: Response): Promise<Response> => {
+		try {
+			const persons = await this.personService.listPersons();
+			return res.json(persons);
+		} catch (error: any) {
+			return res.status(500).json({ message: error.message });
+		}
+	}
 
-    public searchPersons = async (req: Request, res: Response): Promise<Response> => {
-        try {
-            // Extrair parâmetros da query string
-            const {
-                name,
-                document,
-                email,
-                phone,
-                orderBy,
-                orderDirection,
-                page,
-                limit
-            } = req.query;
+	public searchPersons = async (req: Request, res: Response): Promise<Response> => {
+		try {
+			// Extrair parâmetros da query string
+			const {
+				name,
+				document,
+				email,
+				phone,
+				orderBy,
+				orderDirection,
+				page,
+				limit
+			} = req.query;
 
-            // Preparar parâmetros de busca
-            const searchParams: SearchPersonParams = {
-                ...(name && { name: String(name) }),
-                ...(document && { document: String(document) }),
-                ...(email && { email: String(email) }),
-                ...(phone && { phone: String(phone) }),
-                ...(orderBy && { orderBy: orderBy as 'name' | 'document' | 'email' | 'phone' }),
-                ...(orderDirection && { orderDirection: orderDirection as 'ASC' | 'DESC' }),
-                ...(page && { page: parseInt(String(page)) }),
-                ...(limit && { limit: parseInt(String(limit)) })
-            };
+			// Preparar parâmetros de busca
+			const searchParams: SearchPersonParams = {
+				...(name && { name: String(name) }),
+				...(document && { document: String(document) }),
+				...(email && { email: String(email) }),
+				...(phone && { phone: String(phone) }),
+				...(orderBy && { orderBy: orderBy as 'name' | 'document' | 'email' | 'phone' }),
+				...(orderDirection && { orderDirection: orderDirection as 'ASC' | 'DESC' }),
+				...(page && { page: parseInt(String(page)) }),
+				...(limit && { limit: parseInt(String(limit)) })
+			};
 
-            // Chamar service
-            const result = await this.personService.searchPersons(searchParams);
+			// Chamar service
+			const result = await this.personService.searchPersons(searchParams);
 
-            const response: ApiResponse<PersonSearchResult['data']> = {
-                success: true,
-                message: 'Busca realizada com sucesso',
-                data: result.data,
-                pagination: {
-                    total: result.total,
-                    page: result.page,
-                    limit: result.limit,
-                    totalPages: result.totalPages
-                }
-            };
+			const response: ApiResponse<PersonSearchResult['data']> = {
+				success: true,
+				message: 'Busca realizada com sucesso',
+				data: result.data,
+				pagination: {
+					total: result.total,
+					page: result.page,
+					limit: result.limit,
+					totalPages: result.totalPages
+				}
+			};
 
-            return res.status(200).json(response);
+			return res.status(200).json(response);
 
-        } catch (error) {
-            console.error('Erro ao buscar pessoas:', error);
+		} catch (error) {
+			console.error('Erro ao buscar pessoas:', error);
 
-            const errorResponse: ApiResponse = {
-                success: false,
-                message: error instanceof Error ? error.message : 'Erro interno do servidor',
-                data: null
-            };
+			const errorResponse: ApiResponse = {
+				success: false,
+				message: error instanceof Error ? error.message : 'Erro interno do servidor',
+				data: null
+			};
 
-            return res.status(500).json(errorResponse);
-        }
-    };
+			return res.status(500).json(errorResponse);
+		}
+	};
 
 }
 
