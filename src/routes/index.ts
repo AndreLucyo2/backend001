@@ -6,5 +6,5 @@ import { userRouter } from './user.routes';
 export function setupRoutes(app: Express): void {
 	app.use('/api/v1/auth', authRouter);
 	app.use('/api/v1/person', personRoutes);
-	app.use('/api/v1/users', userRouter);
+	app.use('/api/v1/user', userRouter);
 }
