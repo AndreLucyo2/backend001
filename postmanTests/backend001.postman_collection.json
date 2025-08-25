@@ -10,23 +10,13 @@
 			"name": "user",
 			"item": [
 				{
-					"name": "Cria usuários interno - precisa estar logado",
+					"name": "Registrar usuário pelo auth-ja retorna login",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{ACCESS_TOKEN_IA}}",
-									"type": "string"
-								}
-							]
-						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"name\": \"Usuário Teste03\",\r\n  \"email\": \"usuario@teste05.com\",\r\n  \"password\": \"senha123\"\r\n}",
+							"raw": "{\r\n  \"name\": \"User 01\",\r\n  \"email\": \"usuario@teste01.com\",\r\n  \"password\": \"123\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -34,13 +24,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/users/register",
+							"raw": "{{baseUrl}}/api/v1/auth/register",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
-								"users",
+								"v1",
+								"auth",
 								"register"
 							]
 						}
@@ -80,7 +71,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"email\": \"usuario@teste04.com\",\r\n  \"password\": \"senha123\"\r\n}",
+							"raw": "{\r\n  \"email\": \"usuario@teste01.com\",\r\n  \"password\": \"123\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -88,14 +79,54 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/auth/login",
+							"raw": "{{baseUrl}}/api/v1/auth/login",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"auth",
 								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cria usuários interno - precisa estar logado",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{ACCESS_TOKEN_IA}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Usuário Teste04\",\r\n  \"email\": \"usuario@teste04.com\",\r\n  \"password\": \"123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/user/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"register"
 							]
 						}
 					},
@@ -110,13 +141,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/users/list",
+							"raw": "{{baseUrl}}/api/v1/user/list",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
-								"users",
+								"v1",
+								"user",
 								"list"
 							]
 						}
@@ -139,14 +171,45 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/users/list",
+							"raw": "{{baseUrl}}/api/v1/user/list",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
-								"users",
+								"v1",
+								"user",
 								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET user by uid",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{ACCESS_TOKEN_IA}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/user/AAE01DE6-DC1A-489F-A3E6-461752E7A860",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"AAE01DE6-DC1A-489F-A3E6-461752E7A860"
 							]
 						}
 					},
@@ -169,7 +232,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"uid\": \"4DAF7F75-AF8D-48D2-936D-0BA6EF5E75E6\"\r\n}",
+							"raw": "{\r\n  \"uid\": \"AAE01DE6-DC1A-489F-A3E6-461752E7A860\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -177,14 +240,54 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/users/deactivate",
+							"raw": "{{baseUrl}}/api/v1/user/deactivate",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
-								"users",
+								"v1",
+								"user",
 								"deactivate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ativar usuário",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{ACCESS_TOKEN_IA}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"uid\": \"AAE01DE6-DC1A-489F-A3E6-461752E7A860\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/user/activate",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"activate"
 							]
 						}
 					},
@@ -234,7 +337,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"name\": \"John Doe\",\r\n  \"phone\": \"11999999999\",\r\n  \"email\": \"john@example.com\",\r\n  \"cpf\": \"964.374.190-75\",\r\n  \"cnpj\": \"\",\r\n  \"observation\": \"Test person\"\r\n}",
+							"raw": "{\r\n  \"name\": \"John Doe\",\r\n  \"phone\": \"11999999999\",\r\n  \"email\": \"john@example.com\",\r\n  \"document\": \"964.374.190-75\",\r\n  \"observation\": \"Test person\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -242,12 +345,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/person/create",
+							"raw": "{{baseUrl}}/api/v1/person/create",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"person",
 								"create"
 							]
@@ -301,7 +405,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"name\": \"John Doe\",\r\n  \"phone\": \"11999999999\",\r\n  \"email\": \"john15@example.com\",\r\n  \"cpf\": \"358.333.370-54\",\r\n  \"cnpj\": \"\",\r\n  \"observation\": \"Test PF person\"\r\n}\r\n",
+							"raw": "{\r\n  \"name\": \"John Doe\",\r\n  \"phone\": \"11999999999\",\r\n  \"email\": \"john15@example.com\",\r\n  \"document\": \"35833337.054\", // deve ser sem mascara\r\n  \"observation\": \"Test PF person\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -309,12 +413,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/person/create",
+							"raw": "{{baseUrl}}/api/v1/person/create",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"person",
 								"create"
 							]
@@ -368,7 +473,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"John Doe\",\r\n    \"phone\": \"11999999999\",\r\n    \"email\": \"john@example.com\",\r\n    \"cpf\": \"\",\r\n    \"cnpj\": \"88.558.348/0001-40\",\r\n    \"observation\": \"Test person\"\r\n}",
+							"raw": "{\r\n    \"name\": \"John Doe\",\r\n    \"phone\": \"11999999999\",\r\n    \"email\": \"john1@example.com\",\r\n    \"document\": \"35723446000129\",\r\n    \"observation\": \"Test person\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -376,12 +481,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/person/create",
+							"raw": "{{baseUrl}}/api/v1/person/create",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"person",
 								"create"
 							]
@@ -414,9 +520,6 @@
 							}
 						}
 					],
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -436,22 +539,14 @@
 								"type": "text"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"name\": \"John Doe\",\r\n  \"phone\": \"11999999999\",\r\n  \"email\": \"john1@example.com\",\r\n  \"cpf\": \"890.232.720-56\",\r\n  \"observation\": \"Test PF person\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
 						"url": {
-							"raw": "{{baseUrl}}/api/person/list",
+							"raw": "{{baseUrl}}/api/v1/person/list",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"person",
 								"list"
 							]
@@ -516,7 +611,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/person/list?name=",
+							"raw": "{{baseUrl}}/api/person/list?name=John",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -528,7 +623,7 @@
 							"query": [
 								{
 									"key": "name",
-									"value": ""
+									"value": "John"
 								}
 							]
 						}
@@ -580,12 +675,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/api/person/73872CA6-574C-483A-A2F5-A4F8982B3293",
+							"raw": "{{baseUrl}}/api/v1/person/73872CA6-574C-483A-A2F5-A4F8982B3293",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"person",
 								"73872CA6-574C-483A-A2F5-A4F8982B3293"
 							]
@@ -624,7 +720,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiJFQzFFMjU1Ni1GRjJFLTQ5RUQtOUE4Qy01NjNDRTRCMDM1ODIiLCJpYXQiOjE3NTU2NTM3NzUsImV4cCI6MTc1NTc0MDE3NX0.u8owzOv_8GeEdy4apjlSNY6McoPRWDp0_QiP2wmIEf0",
+									"value": "{{ACCESS_TOKEN_IA}}",
 									"type": "string"
 								}
 							]
@@ -647,12 +743,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/person/73872CA6-574C-483A-A2F5-A4F8982B3293",
+							"raw": "{{baseUrl}}/api/v1/person/73872CA6-574C-483A-A2F5-A4F8982B3293",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
+								"v1",
 								"person",
 								"73872CA6-574C-483A-A2F5-A4F8982B3293"
 							]
