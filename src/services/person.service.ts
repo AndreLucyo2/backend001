@@ -58,7 +58,7 @@ export class PersonService {
 				}
 
 			} else {
-				throw new Error('Documento deve ser CPF (11 dígitos) ou CNPJ (14 dígitos)');
+				throw new Error('Documento deve ser somente numeros, CPF (11 dígitos) ou CNPJ (14 dígitos)');
 			}
 		}
 
@@ -237,6 +237,7 @@ export class PersonService {
 			birthDate: person.birthDate,
 			address: person.address,
 			isActive: person.isActive,
+			createdByUserUid: person.createdByUserUid,
 			createdAt: person.createdAt,
 			updatedAt: person.updatedAt
 		};

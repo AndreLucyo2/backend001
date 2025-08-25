@@ -21,6 +21,30 @@ userRouter.post(
 	}
 );
 
+userRouter.get(
+	'/list',
+	authMiddleware,
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			await userController.list(req, res);
+		} catch (error) {
+			next(error);
+		}
+	}
+);
+
+userRouter.get(
+	'/:uid',
+	authMiddleware,
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			await userController.getByUid(req, res);
+		} catch (error) {
+			next(error);
+		}
+	}
+);
+
 userRouter.patch(
 	'/deactivate',
 	authMiddleware,
@@ -45,14 +69,3 @@ userRouter.patch(
 	}
 );
 
-userRouter.get(
-	'/list',
-	authMiddleware,
-	async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			await userController.list(req, res);
-		} catch (error) {
-			next(error);
-		}
-	}
-);

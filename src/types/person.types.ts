@@ -47,6 +47,7 @@ export interface PersonResponse {
 	birthDate: Date | null;
 	address: string | null;
 	isActive: boolean;
+	createdByUserUid: string; //Quem criou o cadastro
 	createdAt: Date;
 	updatedAt: Date;
 }

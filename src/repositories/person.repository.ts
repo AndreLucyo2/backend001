@@ -12,7 +12,7 @@ import { Op } from 'sequelize';
 
 export class PersonRepository implements IPersonRepository {
 
-	async create(personData: CreatePersonData): Promise<Person> {
+	async create(personData: CreatePersonData): Promise<PersonResponse> {
 		try {
 			const personModel = await PersonModel.create(personData as any);
 			return this.mapToEntity(personModel);
@@ -295,6 +295,7 @@ export class PersonRepository implements IPersonRepository {
 			birthDate: personModel.birthDate,
 			address: personModel.address,
 			isActive: personModel.isActive,
+			createdByUserUid: personModel.createdByUserUid,
 			createdAt: personModel.createdAt,
 			updatedAt: personModel.updatedAt
 		};

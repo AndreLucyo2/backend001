@@ -9,11 +9,11 @@ import {
 
 export interface IPersonRepository {
 	// Operações CRUD básicas
-	create(personData: CreatePersonData): Promise<Person>;
+	create(personData: CreatePersonData): Promise<PersonResponse>;
 
 	findByUid(uid: string): Promise<Person | null>;
 
-	update(uid: string, personData: UpdatePersonData): Promise<Person>;
+	update(uid: string, personData: UpdatePersonData): Promise<PersonResponse>;
 
 	delete(uid: string): Promise<boolean>;
 

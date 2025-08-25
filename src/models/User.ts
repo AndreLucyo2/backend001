@@ -9,7 +9,7 @@ export class User extends Model {
 	public password!: string;
 	public name!: string;
 	public isActive!: boolean;
-	public personUid!: string | null;
+	public personUid!: string | null; //Dados pessoais vinculados (se houver)
 	public readonly createdAt!: Date;
 	public readonly updatedAt!: Date;
 

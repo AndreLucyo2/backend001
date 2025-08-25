@@ -39,6 +39,22 @@ export class UserController {
         }
     }
 
+    public getByUid = async (req: Request, res: Response): Promise<Response> => {
+        try {
+            const { uid } = req.params;
+            const user = await this.userService.getByUid(uid);
+
+            return res.status(200).json({
+                user: user,
+                message: 'success',
+                success: true
+            });
+
+        } catch (error: any) {
+            return res.status(400).json({ message: error.message });
+        }
+    }
+
     public deactivate = async (req: Request, res: Response): Promise<Response> => {
         try {
             const { uid } = req.body;
