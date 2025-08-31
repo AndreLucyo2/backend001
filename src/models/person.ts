@@ -9,7 +9,7 @@ export class Person extends Model {
 	public email!: string;
 	public document!: string; //CPF ou CNPJ 
 	public observation!: string;
-	public active!: boolean;
+	public isActive!: boolean;
 	public createdByUserUid!: string;
 	public readonly createdAt!: Date;
 	public updatedByUserUid!: string;
@@ -46,7 +46,7 @@ Person.init(
 			type: DataTypes.TEXT,
 			allowNull: true,
 		},
-		active: {
+		isActive: {
 			type: DataTypes.BOOLEAN,
 			allowNull: false,
 			defaultValue: true,
