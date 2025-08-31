@@ -23,10 +23,6 @@ export class PersonService {
 		this.personRepository = personRepository;
 	}
 
-	/**
-   * Criar uma nova pessoa com validações de negócio
-   * e registrar quem fez o cadastro (createdByUserUid)
-   */
 	async createPerson(personData: CreatePersonData, createdByUserUid: string): Promise<PersonResponse> {
 
 		// Regra de negócio: quando CPF ou CNPJ for obrigatório
@@ -152,9 +148,6 @@ export class PersonService {
 		return this.mapToResponse(updatedPerson);
 	}
 
-	/**
-   * Deletar uma pessoa
-   */
 	async deletePerson(uid: string): Promise<boolean> {
 		const deleted = await this.personRepository.delete(uid);
 		return true;
@@ -244,84 +237,3 @@ export class PersonService {
 	}
 
 }
-
-// import { Person } from '../models/person';
-// import { User } from '../models/user';
-// import { Op } from 'sequelize';
-// import {
-//   formatPhone,
-//   formatCPF,
-//   formatCNPJ,
-//   validateCPF,
-//   validateCNPJ
-// } from '../utils/utilis';
-
-// export class PersonService {
-
-
-
-//   /**
-//    * Buscar pessoa com relacionamentos
-//    */
-//   static async getPersonWithRelations(uid: string) {
-//     const person = await Person.findByPk(uid, {
-//       include: [
-//         {
-//           model: User,
-//           as: 'user',
-//           attributes: ['uid', 'name', 'email']
-//         }
-//       ]
-//     });
-
-//     if (!person) {
-//       throw new Error('Pessoa não encontrada');
-//     }
-
-//     return person;
-//   }
-
-
-
-//   /**
-//    * Vincular uma pessoa com um usuário (1:1) - dados pessoais do usuário
-//    */
-//   static async linkPersonToUser(personUid: string, userUid: string) {
-//     const person = await Person.findByPk(personUid);
-//     const user = await User.findByPk(userUid);
-
-//     if (!person) {
-//       throw new Error('Pessoa não encontrada');
-//     }
-
-//     if (!user) {
-//       throw new Error('Usuário não encontrado');
-//     }
-
-//     // Verifica se essa pessoa já está vinculada a outro usuário
-//     const existingUser = await User.findOne({
-//       where: { personUid: personUid, uid: { [Op.ne]: userUid } }
-//     });
-//     if (existingUser) {
-//       throw new Error('Esta pessoa já está vinculada a outro usuário');
-//     }
-
-//     // Atualiza o usuário para apontar para a pessoa
-//     await user.update({ personUid: personUid });
-//     return user;
-//   }
-
-//   /**
-//    * Inativar uma pessoa (define active como false)
-//    */
-//   static async inactivatePerson(uid: string): Promise<boolean> {
-//     const person = await Person.findByPk(uid);
-//     if (!person) {
-//       return false;
-//     }
-//     await person.update({ active: false, updatedAt: new Date() });
-//     return true;
-//   }
-
-
-// }

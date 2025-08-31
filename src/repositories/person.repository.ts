@@ -7,6 +7,7 @@ import {
 	PersonSearchResult
 } from '../types/person.types';
 import { Person as PersonModel } from '../models/person';
+import { User as UserModel } from '../models/user';
 import { IPersonRepository } from '../interfaces/IPersonRepository';
 import { Op } from 'sequelize';
 
@@ -35,12 +36,11 @@ export class PersonRepository implements IPersonRepository {
 			const personModels = await PersonModel.findAll({
 				where: {
 					[Op.or]: [
-						{ firstName: { [Op.iLike]: `%${name}%` } },
-						{ lastName: { [Op.iLike]: `%${name}%` } }
+						{ name: { [Op.iLike]: `%${name}%` } }
 					],
 					isActive: true
 				},
-				order: [['firstName', 'ASC']]
+				order: [['name', 'ASC']]
 			});
 			return personModels.map(person => this.mapToPublicEntity(person));
 		} catch (error: any) {
@@ -97,13 +97,66 @@ export class PersonRepository implements IPersonRepository {
 	async findAll(): Promise<Person[]> {
 		try {
 			const personModels = await PersonModel.findAll({
-				order: [['firstName', 'ASC'], ['lastName', 'ASC']]
+				order: [['name', 'ASC']]
 			});
 			return personModels.map(person => this.mapToEntity(person));
 		} catch (error: any) {
 			throw new Error(`Failed to find persons: ${error.message}`);
 		}
 	}
+
+	/**
+	 * Vincular uma pessoa com um usuário (1:1) - dados pessoais do usuário
+	 */
+	static async linkPersonToUser(personUid: string, userUid: string) {
+		const person = await PersonModel.findByPk(personUid);
+		const user = await UserModel.findByPk(userUid);
+
+		if (!person) {
+			throw new Error('Pessoa não encontrada');
+		}
+
+		if (!user) {
+			throw new Error('Usuário não encontrado');
+		}
+
+		// Verifica se essa pessoa já está vinculada a outro usuário
+		const existingUser = await UserModel.findOne({
+			where: { personUid: personUid, uid: { [Op.ne]: userUid } }
+		});
+		if (existingUser) {
+			throw new Error('Esta pessoa já está vinculada a outro usuário');
+		}
+
+		// Atualiza o usuário para apontar para a pessoa
+		await user.update({ personUid: personUid });
+		return user;
+	}
+
+	/**
+	 * Buscar pessoa com relacionamentos: retorna a pessoa junto com o usuário vinculado
+	 */
+	static async getPersonWithRelations(uid: string) {
+		const person = await PersonModel.findByPk(uid, {
+			include: [
+				{
+					model: UserModel,
+					as: 'user',
+					attributes: ['uid', 'name', 'email']
+				}
+			]
+		});
+
+		if (!person) {
+			throw new Error('Pessoa não encontrada');
+		}
+
+		return person;
+	}
+
+
+
+	//----
 
 	/**
 	* Listar pessoas com filtros e paginação
@@ -210,6 +263,7 @@ export class PersonRepository implements IPersonRepository {
 				document: row.document,
 				email: row.email,
 				phone: row.phone,
+				celPhone: row.celPhone,
 				address: row.address,
 				isActive: row.isActive,
 				createdByUserUid: row.createdByUserUid,
@@ -237,7 +291,7 @@ export class PersonRepository implements IPersonRepository {
 		try {
 			const personModels = await PersonModel.findAll({
 				where: { isActive: true },
-				order: [['firstName', 'ASC'], ['lastName', 'ASC']]
+				order: [['name', 'ASC']]
 			});
 			return personModels.map(person => this.mapToPublicEntity(person));
 		} catch (error: any) {
@@ -249,7 +303,7 @@ export class PersonRepository implements IPersonRepository {
 		try {
 			const personModels = await PersonModel.findAll({
 				where: { isActive: true },
-				order: [['firstName', 'ASC']]
+				order: [['name', 'ASC']]
 			});
 			return personModels.map(person => this.mapToPublicEntity(person));
 		} catch (error: any) {
@@ -261,7 +315,7 @@ export class PersonRepository implements IPersonRepository {
 		try {
 			const personModels = await PersonModel.findAll({
 				where: { isActive: false },
-				order: [['firstName', 'ASC']]
+				order: [['name', 'ASC']]
 			});
 			return personModels.map(person => this.mapToPublicEntity(person));
 		} catch (error: any) {
@@ -278,6 +332,7 @@ export class PersonRepository implements IPersonRepository {
 			document: personModel.document,
 			email: personModel.email,
 			phone: personModel.phone,
+			celPhone: personModel.celPhone,
 			address: personModel.address,
 			isActive: personModel.isActive,
 			createdByUserUid: personModel.createdByUserUid,

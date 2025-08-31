@@ -5,7 +5,8 @@ export interface Person {
 	birthDate: Date | null;
 	document: string;
 	email: string;
-	phone: string | null;
+	phone: Number | null;
+	celPhone: Number | null;
 	address: string | null;
 	isActive: boolean;
 	createdByUserUid: string;
@@ -20,7 +21,8 @@ export interface CreatePersonData {
 	birthDate?: Date | null;
 	document?: string | null; //CPF ou CNPJ 
 	email?: string | null;
-	phone?: string | null;
+	phone: string | null;
+	celPhone: string | null;
 	address?: string | null;
 	isActive: boolean | true;
 	createdByUserUid: string; //Quem criou o cadastro
@@ -34,6 +36,7 @@ export interface UpdatePersonData {
 	birthDate?: Date | null;
 	document?: string; //CPF ou CNPJ 
 	phone?: string | null;
+	celPhone?: string | null;
 	address?: string | null;
 	isActive?: boolean | true;
 	updatedByUserUid: string | null; //Quem editou por ultimo
@@ -57,8 +60,9 @@ export interface SearchPersonParams {
 	name?: string;
 	document?: string;
 	email?: string;
-	phone?: string;
-	orderBy?: 'name' | 'document' | 'email' | 'phone';
+	phone?: string | null;
+	celPhone?: string | null;
+	orderBy?: 'name' | 'document' | 'email' ;
 	orderDirection?: 'ASC' | 'DESC';
 	page?: number;
 	limit?: number;
@@ -71,7 +75,6 @@ export interface SearchResult<T> {
 	limit: number;
 	totalPages: number;
 }
-
 export interface PersonSearchResult extends SearchResult<Person> { }
 
 // Tipo para resposta da API

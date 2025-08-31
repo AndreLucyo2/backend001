@@ -20,19 +20,19 @@ export class PersonController {
 
 	public static validations = {
 		create: [
-			body('firstName').notEmpty().trim(),
-			body('lastName').notEmpty().trim(),
+			body('name').notEmpty().trim(),
 			body('document').isLength({ min: 11, max: 14 }).isNumeric(),
 			body('birthDate').optional().isISO8601(),
 			body('phone').optional().trim(),
+			body('celPhone').optional().trim(),
 			body('address').optional().trim(),
 		],
 		update: [
-			body('firstName').optional().trim(),
-			body('lastName').optional().trim(),
+			body('name').optional().trim(),
 			body('document').optional().isLength({ min: 11, max: 14 }).isNumeric(),
 			body('birthDate').optional().isISO8601(),
 			body('phone').optional().trim(),
+			body('celPhone').optional().trim(),
 			body('address').optional().trim(),
 		]
 	};
@@ -122,6 +122,7 @@ export class PersonController {
 				document,
 				email,
 				phone,
+				celPhone,
 				orderBy,
 				orderDirection,
 				page,
@@ -134,7 +135,8 @@ export class PersonController {
 				...(document && { document: String(document) }),
 				...(email && { email: String(email) }),
 				...(phone && { phone: String(phone) }),
-				...(orderBy && { orderBy: orderBy as 'name' | 'document' | 'email' | 'phone' }),
+				...(celPhone && { phone: String(celPhone) }),
+				...(orderBy && { orderBy: orderBy as 'name' | 'document' | 'email'}),
 				...(orderDirection && { orderDirection: orderDirection as 'ASC' | 'DESC' }),
 				...(page && { page: parseInt(String(page)) }),
 				...(limit && { limit: parseInt(String(limit)) })

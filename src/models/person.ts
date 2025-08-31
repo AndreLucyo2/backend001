@@ -6,6 +6,7 @@ export class Person extends Model {
 	public uid!: string;
 	public name!: string;
 	public phone!: string;
+	public celPhone!: string;
 	public email!: string;
 	public document!: string; //CPF ou CNPJ 
 	public observation!: string;
@@ -31,6 +32,10 @@ Person.init(
 			allowNull: false,
 		},
 		phone: {
+			type: DataTypes.STRING,
+			allowNull: true,
+		},
+		celPhone: {
 			type: DataTypes.STRING,
 			allowNull: true,
 		},
