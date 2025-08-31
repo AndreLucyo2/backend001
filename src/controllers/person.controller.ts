@@ -5,7 +5,7 @@ import {
 	Person,
 	CreatePersonData,
 	UpdatePersonData,
-	PersonResponse,
+	PersonResponsePublic,
 	SearchPersonParams,
 	PersonSearchResult,
 	ApiResponse

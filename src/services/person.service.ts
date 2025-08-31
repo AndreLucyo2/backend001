@@ -4,6 +4,7 @@ import {
 	CreatePersonData,
 	UpdatePersonData,
 	PersonResponse,
+	PersonResponsePublic,
 	SearchPersonParams,
 	PersonSearchResult
 } from '../types/person.types';
@@ -23,7 +24,7 @@ export class PersonService {
 		this.personRepository = personRepository;
 	}
 
-	async createPerson(personData: CreatePersonData, createdByUserUid: string): Promise<PersonResponse> {
+	async createPerson(personData: CreatePersonData, createdByUserUid: string): Promise<PersonResponsePublic> {
 
 		// Regra de negócio: quando CPF ou CNPJ for obrigatório
 		if (!personData.document) {
@@ -81,7 +82,7 @@ export class PersonService {
 		personData.updatedAt = new Date();
 
 		const person = await this.personRepository.create(personData as any);
-		return this.mapToResponse(person);
+		return this.mapToResponsePublic(person);
 
 	}
 
@@ -93,7 +94,7 @@ export class PersonService {
 		return this.mapToResponse(person);
 	}
 
-	async updatePerson(uid: string, updateData: UpdatePersonData, updatedByUserUid: string): Promise<PersonResponse> {
+	async updatePerson(uid: string, updateData: UpdatePersonData, updatedByUserUid: string): Promise<PersonResponsePublic> {
 		// Verificar se existe
 		const person = await this.getPersonByUid(uid);
 		if (!person) {
@@ -145,7 +146,7 @@ export class PersonService {
 		updateData.updatedAt = new Date();
 
 		const updatedPerson = await this.personRepository.update(uid, updateData);
-		return this.mapToResponse(updatedPerson);
+		return this.mapToResponsePublic(updatedPerson);
 	}
 
 	async deletePerson(uid: string): Promise<boolean> {
@@ -188,7 +189,7 @@ export class PersonService {
 
 	}
 
-	async listPersons(): Promise<PersonResponse[]> {
+	async listPersons(): Promise<PersonResponsePublic[]> {
 		return await this.personRepository.findAllPublic();
 	}
 
@@ -223,7 +224,27 @@ export class PersonService {
 		}
 	}
 
+	//------------------------------------------------------------------------------------
+	//Mapers: mapeadores de dados
+	//------------------------------------------------------------------------------------
 	private mapToResponse(person: any): PersonResponse {
+		return {
+			uid: person.uid,
+			name: person.name,
+			document: person.document,
+			phone: person.phone,
+			celPhone: person.celPhone,
+			email: person.email,
+			birthDate: person.birthDate,
+			address: person.address,
+			isActive: person.isActive,
+			createdByUserUid: person.createdByUserUid,
+			createdAt: person.createdAt,
+			updatedAt: person.updatedAt
+		};
+	}
+
+	private mapToResponsePublic(person: any): PersonResponsePublic {
 		return {
 			uid: person.uid,
 			name: person.name,
@@ -235,5 +256,4 @@ export class PersonService {
 			updatedAt: person.updatedAt
 		};
 	}
-
 }

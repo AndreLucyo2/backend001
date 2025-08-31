@@ -2,36 +2,34 @@ import {
 	Person,
 	CreatePersonData,
 	UpdatePersonData,
-	PersonResponse,
+	PersonResponsePublic,
 	SearchPersonParams,
 	PersonSearchResult
 } from '../types/person.types';
 
 export interface IPersonRepository {
 	// Operações CRUD básicas
-	create(personData: CreatePersonData): Promise<PersonResponse>;
-
-	findByUid(uid: string): Promise<Person | null>;
-
-	update(uid: string, personData: UpdatePersonData): Promise<PersonResponse>;
-
+	create(personData: CreatePersonData): Promise<PersonResponsePublic>;
+	
+	update(uid: string, personData: UpdatePersonData): Promise<PersonResponsePublic>;
+	
 	delete(uid: string): Promise<boolean>;
 
-	//Busca por CPF ou CNPJ
+	findByUid(uid: string): Promise<Person | null>;
+	
 	findByDocument(document: string): Promise<Person | null>;
 
 	findByEmail(email: string): Promise<Person | null>;
 
-	findByName(name: string): Promise<PersonResponse[]>;
+	findByName(name: string): Promise<PersonResponsePublic[]>;
 
-	// Operações de consulta
 	searchPersons(params: SearchPersonParams): Promise<PersonSearchResult>;
 
-	findActive(): Promise<PersonResponse[]>;
-	findInactive(): Promise<PersonResponse[]>;
+	findActive(): Promise<PersonResponsePublic[]>;
+	findInactive(): Promise<PersonResponsePublic[]>;
 	findAll(): Promise<Person[]>;
 
 	// Listar todos (sem dados sensíveis para resposta pública)
-	findAllPublic(): Promise<PersonResponse[]>;
+	findAllPublic(): Promise<PersonResponsePublic[]>;
 
 }

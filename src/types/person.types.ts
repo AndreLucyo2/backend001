@@ -43,8 +43,23 @@ export interface UpdatePersonData {
 	updatedAt: Date; //Data de edicao (padrão é agora)
 }
 
-// Para resposta pública
 export interface PersonResponse {
+	uid: string;
+	name: string;
+	birthDate: Date | null;
+	document?: string | null; //CPF ou CNPJ 
+	email?: string | null;
+	phone?: string | null;
+	celPhone?: string | null;
+	address: string | null;
+	isActive: boolean;
+	createdByUserUid: string; //Quem criou o cadastro
+	createdAt: Date;
+	updatedAt: Date;
+}
+
+// Para resposta pública
+export interface PersonResponsePublic {
 	uid: string;
 	name: string;
 	birthDate: Date | null;
@@ -62,7 +77,7 @@ export interface SearchPersonParams {
 	email?: string;
 	phone?: string | null;
 	celPhone?: string | null;
-	orderBy?: 'name' | 'document' | 'email' ;
+	orderBy?: 'name' | 'document' | 'email';
 	orderDirection?: 'ASC' | 'DESC';
 	page?: number;
 	limit?: number;

@@ -2,7 +2,7 @@ import {
 	Person,
 	CreatePersonData,
 	UpdatePersonData,
-	PersonResponse,
+	PersonResponsePublic,
 	SearchPersonParams,
 	PersonSearchResult
 } from '../types/person.types';
@@ -13,7 +13,7 @@ import { Op } from 'sequelize';
 
 export class PersonRepository implements IPersonRepository {
 
-	async create(personData: CreatePersonData): Promise<PersonResponse> {
+	async create(personData: CreatePersonData): Promise<PersonResponsePublic> {
 		try {
 			const personModel = await PersonModel.create(personData as any);
 			return this.mapToEntity(personModel);
@@ -31,7 +31,7 @@ export class PersonRepository implements IPersonRepository {
 		}
 	}
 
-	async findByName(name: string): Promise<PersonResponse[]> {
+	async findByName(name: string): Promise<PersonResponsePublic[]> {
 		try {
 			const personModels = await PersonModel.findAll({
 				where: {
@@ -287,7 +287,7 @@ export class PersonRepository implements IPersonRepository {
 		}
 	}
 
-	async findAllPublic(): Promise<PersonResponse[]> {
+	async findAllPublic(): Promise<PersonResponsePublic[]> {
 		try {
 			const personModels = await PersonModel.findAll({
 				where: { isActive: true },
@@ -299,7 +299,7 @@ export class PersonRepository implements IPersonRepository {
 		}
 	}
 
-	async findActive(): Promise<PersonResponse[]> {
+	async findActive(): Promise<PersonResponsePublic[]> {
 		try {
 			const personModels = await PersonModel.findAll({
 				where: { isActive: true },
@@ -311,7 +311,7 @@ export class PersonRepository implements IPersonRepository {
 		}
 	}
 
-	async findInactive(): Promise<PersonResponse[]> {
+	async findInactive(): Promise<PersonResponsePublic[]> {
 		try {
 			const personModels = await PersonModel.findAll({
 				where: { isActive: false },
@@ -343,7 +343,7 @@ export class PersonRepository implements IPersonRepository {
 	}
 
 	// Mapeia para resposta pública - sem dados sensíveis
-	private mapToPublicEntity(personModel: any): PersonResponse {
+	private mapToPublicEntity(personModel: any): PersonResponsePublic {
 		return {
 			uid: personModel.uid,
 			name: personModel.name,
