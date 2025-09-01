@@ -1,3 +1,10 @@
+import {
+	Address,
+	CreateAddressData,
+	UpdateAddressData,
+	AddressResponse
+} from "../types/address.types";
+
 // Entidade Person principal
 export interface Person {
 	uid: string;
@@ -7,7 +14,7 @@ export interface Person {
 	email: string;
 	phone: Number | null;
 	celPhone: Number | null;
-	address: string | null;
+	//address: string | null;
 	isActive: boolean;
 	createdByUserUid: string;
 	createdAt: Date;
@@ -23,7 +30,7 @@ export interface CreatePersonData {
 	email?: string | null;
 	phone: string | null;
 	celPhone: string | null;
-	address?: string | null;
+	//address?: string | null;
 	isActive: boolean | true;
 	createdByUserUid: string; //Quem criou o cadastro
 	createdAt: Date; //Data de criação (padrão é agora)
@@ -33,11 +40,11 @@ export interface CreatePersonData {
 // Para atualização (campos opcionais)
 export interface UpdatePersonData {
 	name?: string;
-	birthDate?: Date | null;
+	//birthDate?: Date | null;
 	document?: string; //CPF ou CNPJ 
 	phone?: string | null;
 	celPhone?: string | null;
-	address?: string | null;
+	//address?: string | null;
 	isActive?: boolean | true;
 	updatedByUserUid: string | null; //Quem editou por ultimo
 	updatedAt: Date; //Data de edicao (padrão é agora)
@@ -46,12 +53,12 @@ export interface UpdatePersonData {
 export interface PersonResponse {
 	uid: string;
 	name: string;
-	birthDate: Date | null;
+	//birthDate: Date | null;
 	document?: string | null; //CPF ou CNPJ 
 	email?: string | null;
 	phone?: string | null;
 	celPhone?: string | null;
-	address: string | null;
+	//address: string | null;
 	isActive: boolean;
 	createdByUserUid: string; //Quem criou o cadastro
 	createdAt: Date;
@@ -62,8 +69,8 @@ export interface PersonResponse {
 export interface PersonResponsePublic {
 	uid: string;
 	name: string;
-	birthDate: Date | null;
-	address: string | null;
+	//birthDate: Date | null;
+	//address: string | null;
 	isActive: boolean;
 	createdByUserUid: string; //Quem criou o cadastro
 	createdAt: Date;
@@ -103,4 +110,23 @@ export interface ApiResponse<T = any> {
 		limit: number;
 		totalPages: number;
 	};
+}
+
+
+// Atualizar Person types para incluir endereços
+export interface PersonWithAddresses {
+	uid: string;
+	name: string;
+	//birthDate: Date | null;
+	document: string;
+	email: string;
+	phone: string | null;
+	celPhone: string | null;
+	isActive: boolean;
+	createdByUserUid: string;
+	createdAt: Date;
+	updatedByUserUid: string;
+	updatedAt: Date;
+	addresses: AddressResponse[]; // Lista de endereços
+	primaryAddress?: AddressResponse; // Endereço principal (opcional)
 }

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { PersonService } from '../services/person.service';
 import { body, validationResult } from 'express-validator';
+import { PersonService } from '../services/person.service';
 import {
 	Person,
 	CreatePersonData,
@@ -22,7 +22,7 @@ export class PersonController {
 		create: [
 			body('name').notEmpty().trim(),
 			body('document').isLength({ min: 11, max: 14 }).isNumeric(),
-			body('birthDate').optional().isISO8601(),
+			//body('birthDate').optional().isISO8601(),
 			body('phone').optional().trim(),
 			body('celPhone').optional().trim(),
 			body('address').optional().trim(),
@@ -30,7 +30,7 @@ export class PersonController {
 		update: [
 			body('name').optional().trim(),
 			body('document').optional().isLength({ min: 11, max: 14 }).isNumeric(),
-			body('birthDate').optional().isISO8601(),
+			//body('birthDate').optional().isISO8601(),
 			body('phone').optional().trim(),
 			body('celPhone').optional().trim(),
 			body('address').optional().trim(),

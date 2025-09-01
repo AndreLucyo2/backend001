@@ -4,9 +4,17 @@ import {
 	UpdatePersonData,
 	PersonResponsePublic,
 	SearchPersonParams,
+	PersonWithAddresses,
 	PersonSearchResult
 } from '../types/person.types';
+import {
+	Address,
+	CreateAddressData,
+	UpdateAddressData,
+	AddressResponse
+} from "../types/address.types";
 import { Person as PersonModel } from '../models/person';
+import { Address as AddressModel } from '../models/address';
 import { User as UserModel } from '../models/user';
 import { IPersonRepository } from '../interfaces/IPersonRepository';
 import { Op } from 'sequelize';
@@ -155,7 +163,6 @@ export class PersonRepository implements IPersonRepository {
 	}
 
 
-
 	//----
 
 	/**
@@ -256,15 +263,14 @@ export class PersonRepository implements IPersonRepository {
 			});
 
 			// Mapear os resultados para o tipo Person
-			const data: Person[] = rows.map((row: any) => ({
+			const data: PersonModel[] = rows.map((row: any) => ({
 				uid: row.uid,
 				name: row.name,
-				birthDate: row.birthDate,
+				//birthDate: row.birthDate,
 				document: row.document,
 				email: row.email,
 				phone: row.phone,
 				celPhone: row.celPhone,
-				address: row.address,
 				isActive: row.isActive,
 				createdByUserUid: row.createdByUserUid,
 				createdAt: row.createdAt,
@@ -324,16 +330,15 @@ export class PersonRepository implements IPersonRepository {
 	}
 
 	// Mapeia modelo para entidade completa
-	private mapToEntity(personModel: any): Person {
+	private mapToEntity(personModel: any): PersonResponse {
 		return {
 			uid: personModel.uid,
 			name: personModel.name,
-			birthDate: personModel.birthDate,
+			//birthDate: personModel.birthDate,
 			document: personModel.document,
 			email: personModel.email,
 			phone: personModel.phone,
 			celPhone: personModel.celPhone,
-			address: personModel.address,
 			isActive: personModel.isActive,
 			createdByUserUid: personModel.createdByUserUid,
 			createdAt: personModel.createdAt,
@@ -347,12 +352,63 @@ export class PersonRepository implements IPersonRepository {
 		return {
 			uid: personModel.uid,
 			name: personModel.name,
-			birthDate: personModel.birthDate,
-			address: personModel.address,
+			//birthDate: personModel.birthDate,
+			//address: personModel.address,
 			isActive: personModel.isActive,
 			createdByUserUid: personModel.createdByUserUid,
 			createdAt: personModel.createdAt,
 			updatedAt: personModel.updatedAt
 		};
 	}
+
+
+
+	async findByUidWithAddresses(uid: string): Promise<PersonWithAddresses | null> {
+		try {
+			const personModel = await PersonModel.findByPk(uid, {
+				include: [
+					{
+						model: AddressModel,
+						as: 'addresses',
+						where: { isActive: true },
+						required: false,
+						order: [['isPrimary', 'DESC'], ['createdAt', 'ASC']]
+					}
+				]
+			});
+
+			if (!personModel) return null;
+
+			const person = this.mapToEntity(personModel);
+			const addresses = personModel.addresses?.map((addr: any) => this.mapAddressToResponse(addr)) || [];
+			const primaryAddress = addresses.find(addr => addr.isPrimary);
+
+			return {
+				...person,
+				addresses,
+				primaryAddress
+			};
+		} catch (error: any) {
+			throw new Error(`Failed to find person with addresses: ${error.message}`);
+		}
+	}
+
+	private mapAddressToResponse(addressModel: any): AddressResponse {
+		return {
+			uid: addressModel.uid,
+			street: addressModel.street,
+			number: addressModel.number,
+			neighborhood: addressModel.neighborhood,
+			zipCode: addressModel.zipCode,
+			city: addressModel.city,
+			state: addressModel.state,
+			country: addressModel.country,
+			observation: addressModel.observation,
+			isPrimary: addressModel.isPrimary,
+			isActive: addressModel.isActive,
+			createdAt: addressModel.createdAt,
+			updatedAt: addressModel.updatedAt
+		};
+	}
+
 }

@@ -5,15 +5,25 @@ import { AuthService } from '../services/auth.service';
 import { AuthController } from '../controllers/auth.controller';
 import { UserService } from '../services/user.service';
 import { UserController } from '../controllers/user.controller';
+
 import { PersonService } from '../services/person.service';
 import { PersonController } from '../controllers/person.controller';
 import { PersonRepository } from '../repositories/person.repository';
 import { IPersonRepository } from '../interfaces/IPersonRepository';
 
+import { AddressRepository } from '../repositories/address.repository';
+import { AddressService } from '../services/address.service';
+import { AddressController } from '../controllers/address.controller';
+import { IAddressRepository } from '../interfaces/IAddressRepository';
+
+
 // Centraliza criação de objetos e suas dependências
 // DIContainer significa Dependency Injection Container.
 export class DIContainer {
 
+    // ==================================================
+    // Users
+    // ==================================================
     // Singleton: uma instância do repository para toda aplicação
     private static userRepositoryInstance: IUserRepository;
 
@@ -49,6 +59,9 @@ export class DIContainer {
         return new UserController(userService);
     }
 
+    // ==================================================
+    // Person
+    // ==================================================
     // Singleton: uma instância do repository para toda aplicação
     private static personRepositoryInstance: IPersonRepository;
 
@@ -68,5 +81,28 @@ export class DIContainer {
         const personService = this.createPersonService();
         return new PersonController(personService);
     }
+
+    // ==================================================
+    // Adresses
+    // ==================================================
+    private static addressRepositoryInstance: IAddressRepository;
+
+    static getAddressRepository(): IAddressRepository {
+        if (!this.addressRepositoryInstance) {
+            this.addressRepositoryInstance = new AddressRepository();
+        }
+        return this.addressRepositoryInstance;
+    }
+
+    static createAddressService(): AddressService {
+        const addressRepository = this.getAddressRepository();
+        return new AddressService(addressRepository);
+    }
+
+    static createAddressController(): AddressController {
+        const addressService = this.createAddressService();
+        return new AddressController(addressService);
+    }
+
 
 }
