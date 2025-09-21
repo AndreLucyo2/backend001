@@ -12,6 +12,7 @@ export class Person extends Model {
 	public email!: string;
 	public document!: string; //CPF ou CNPJ 
 	public observation!: string;
+	public birthDate?: Date | null;
 	public isActive!: boolean;
 	public createdByUserUid!: string;
 	public readonly createdAt!: Date;
@@ -98,6 +99,10 @@ Person.init(
 			type: DataTypes.TEXT,
 			allowNull: true,
 		},
+		birthDate: {
+			type: DataTypes.DATE,
+			allowNull: true,
+		},
 		isActive: {
 			type: DataTypes.BOOLEAN,
 			allowNull: false,
@@ -146,7 +151,7 @@ Person.init(
 			},
 			{
 				fields: ['document'],
-				unique: true,				
+				unique: true,
 				name: 'idx_persons_document_unique'
 			},
 			{

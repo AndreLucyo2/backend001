@@ -2,6 +2,7 @@ import {
 	Person,
 	CreatePersonData,
 	UpdatePersonData,
+	PersonResponse,
 	PersonResponsePublic,
 	SearchPersonParams,
 	PersonWithAddresses,
