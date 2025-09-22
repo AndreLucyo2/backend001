@@ -3,6 +3,8 @@ import { sequelize } from '../config/database';
 import { Op } from 'sequelize';
 import { v4 as uuidv4 } from 'uuid';
 import { Address } from './address';
+import { AddressResponse } from '../types/address.types';
+import { UUID } from 'crypto';
 
 export class Person extends Model {
 	public uid!: string;
@@ -20,7 +22,8 @@ export class Person extends Model {
 	public updatedAt!: Date;
 
 	// Associações - definidas após inicialização
-	public addresses?: any[]; // Será tipado corretamente após import do Address model
+	public addresses?: [AddressResponse]; // Será tipado corretamente após import do Address model
+	public primaryAddress?: string | null;
 
 }
 
@@ -90,10 +93,12 @@ Person.init(
 				}
 			}
 		},
-		address: {
-			type: DataTypes.TEXT,
+		primaryAddress: {
+			type: DataTypes.STRING,
 			allowNull: true,
-			comment: 'Legacy field - use addresses table for structured addresses'
+			references: { model: 'addresses', key: 'uid' },
+			onUpdate: 'CASCADE',
+			onDelete: 'SET NULL',
 		},
 		observation: {
 			type: DataTypes.TEXT,

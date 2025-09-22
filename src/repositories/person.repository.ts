@@ -264,14 +264,16 @@ export class PersonRepository implements IPersonRepository {
 			});
 
 			// Mapear os resultados para o tipo Person
-			const data: PersonModel[] = rows.map((row: any) => ({
+			const data: Person[] = rows.map((row: any) => ({
 				uid: row.uid,
 				name: row.name,
-				//birthDate: row.birthDate,
+				birthDate: row.birthDate,
 				document: row.document,
 				email: row.email,
 				phone: row.phone,
 				celPhone: row.celPhone,
+				addresses: row.addresses,
+				observation: row.observation,
 				isActive: row.isActive,
 				createdByUserUid: row.createdByUserUid,
 				createdAt: row.createdAt,
@@ -330,16 +332,30 @@ export class PersonRepository implements IPersonRepository {
 		}
 	}
 
+	//Atualiza o endereço principal da pessoa
+	async updatePrimaryAddress(personUid: string, addressUid: string): Promise<void> {
+		const person = await PersonModel.findByPk(personUid);
+		if (!person) {
+			throw new Error('Person not found');
+		}
+
+		person.primaryAddress = addressUid;
+		await person.save();
+	}
+
 	// Mapeia modelo para entidade completa
 	private mapToEntity(personModel: any): PersonResponse {
 		return {
 			uid: personModel.uid,
 			name: personModel.name,
-			//birthDate: personModel.birthDate,
+			birthDate: personModel.birthDate,
 			document: personModel.document,
 			email: personModel.email,
 			phone: personModel.phone,
 			celPhone: personModel.celPhone,
+			addresses: personModel.addresses,
+			primaryAddress: personModel.primaryAddress,
+			observation: personModel.observation,
 			isActive: personModel.isActive,
 			createdByUserUid: personModel.createdByUserUid,
 			createdAt: personModel.createdAt,
@@ -353,16 +369,14 @@ export class PersonRepository implements IPersonRepository {
 		return {
 			uid: personModel.uid,
 			name: personModel.name,
-			//birthDate: personModel.birthDate,
-			//address: personModel.address,
+			birthDate: personModel.birthDate,
+			addresses: personModel.addresses,
 			isActive: personModel.isActive,
 			createdByUserUid: personModel.createdByUserUid,
 			createdAt: personModel.createdAt,
 			updatedAt: personModel.updatedAt
 		};
 	}
-
-
 
 	async findByUidWithAddresses(uid: string): Promise<PersonWithAddresses | null> {
 		try {
@@ -387,7 +401,7 @@ export class PersonRepository implements IPersonRepository {
 			return {
 				...person,
 				addresses,
-				primaryAddress
+				primaryAddress: primaryAddress ? primaryAddress.uid : null
 			};
 		} catch (error: any) {
 			throw new Error(`Failed to find person with addresses: ${error.message}`);

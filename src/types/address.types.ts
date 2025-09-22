@@ -46,7 +46,7 @@ export interface UpdateAddressData {
 	observation?: string | null;
 	isPrimary?: boolean;
 	isActive?: boolean;
-	updatedByUserUid?: string;
+	updatedByUserUid: string;
 	updatedAt?: Date;
 }
 

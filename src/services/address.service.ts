@@ -1,16 +1,19 @@
 import {
-    Address,
-    CreateAddressData,
-    UpdateAddressData,
-    AddressResponse
+	Address,
+	CreateAddressData,
+	UpdateAddressData,
+	AddressResponse
 } from "../types/address.types";
 import { IAddressRepository } from '../interfaces/IAddressRepository';
+import { IPersonRepository } from './../interfaces/IPersonRepository';
 
 export class AddressService {
 	private addressRepository: IAddressRepository;
-
-	constructor(addressRepository: IAddressRepository) {
+	private personRepository: IPersonRepository;
+	
+	constructor(addressRepository: IAddressRepository, personRepository: IPersonRepository) {
 		this.addressRepository = addressRepository;
+		this.personRepository = personRepository;
 	}
 
 	async createAddress(addressData: CreateAddressData, createdByUserUid: string): Promise<AddressResponse> {
@@ -70,7 +73,24 @@ export class AddressService {
 	}
 
 	async setPrimaryAddress(personUid: string, addressUid: string): Promise<boolean> {
-		return await this.addressRepository.setPrimaryAddress(personUid, addressUid);
+		
+		const address = await this.addressRepository.findByUid(addressUid);
+		if (!address || address.personUid !== personUid) {
+			throw new Error('Address not found or does not belong to person');
+		}
+
+		// Desmarcar outros como principal
+		await this.addressRepository.unsetOtherPrimaryAddresses(personUid, addressUid);
+
+		// Marcar este como principal
+		await this.addressRepository.setPrimaryAddress(personUid, addressUid);
+
+		// Atualizar o campo primaryAddress em Person
+		await this.personRepository.updatePrimaryAddress(personUid, addressUid);
+
+		return true;
+
+		//return await this.addressRepository.setPrimaryAddress(personUid, addressUid);
 	}
 
 	async deactivateAddress(uid: string, updatedByUserUid: string): Promise<boolean> {

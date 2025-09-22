@@ -15,6 +15,7 @@ export interface IAddressRepository {
     findByPersonUid(personUid: string): Promise<Address[]>;
     findPrimaryByPersonUid(personUid: string): Promise<Address | null>;
     setPrimaryAddress(personUid: string, addressUid: string): Promise<boolean>;
+    unsetOtherPrimaryAddresses(personUid: string, addressUid: string): Promise<void>;
     deactivateAddress(uid: string, updatedByUserUid: string): Promise<boolean>;
     activateAddress(uid: string, updatedByUserUid: string): Promise<boolean>;
 }

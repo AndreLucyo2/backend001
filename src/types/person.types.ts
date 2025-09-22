@@ -10,11 +10,11 @@ export interface Person {
 	uid: string;
 	name: string;
 	birthDate: Date | null;
-	document: string;
-	email: string;
-	phone: Number | null;
-	celPhone: Number | null;
-	address: string | null;
+	document?: string | null;
+	email?: string | null;
+	phone?: string | null;
+	celPhone?: string | null;
+	addresses?: AddressResponse[]  | null;
 	isActive: boolean;
 	createdByUserUid: string;
 	createdAt: Date;
@@ -28,9 +28,9 @@ export interface CreatePersonData {
 	birthDate?: Date | null;
 	document?: string | null; //CPF ou CNPJ 
 	email?: string | null;
-	phone: string | null;
-	celPhone: string | null;
-	address?: string | null;
+	phone?: string | null;
+	celPhone?: string | null;
+	addresses?: AddressResponse[]  | null;
 	isActive: boolean | true;
 	createdByUserUid: string; //Quem criou o cadastro
 	createdAt: Date; //Data de criação (padrão é agora)
@@ -41,12 +41,12 @@ export interface CreatePersonData {
 export interface UpdatePersonData {
 	name?: string;
 	birthDate?: Date | null;
-	document?: string; //CPF ou CNPJ 
+	document?: string | null; //CPF ou CNPJ 
 	phone?: string | null;
 	celPhone?: string | null;
-	address?: string | null;
+	addresses?: AddressResponse[]  | null;
 	isActive?: boolean | true;
-	updatedByUserUid: string | null; //Quem editou por ultimo
+	updatedByUserUid: string; //Quem editou por ultimo
 	updatedAt: Date; //Data de edicao (padrão é agora)
 }
 
@@ -58,9 +58,12 @@ export interface PersonResponse {
 	email?: string | null;
 	phone?: string | null;
 	celPhone?: string | null;
-	address: string | null;
+	addresses?: AddressResponse[] | null;
+	primaryAddress?: string | null;
+	observation?: string | null;
 	isActive: boolean;
 	createdByUserUid: string; //Quem criou o cadastro
+	updatedByUserUid: string; //Quem criou o cadastro
 	createdAt: Date;
 	updatedAt: Date;
 }
@@ -69,8 +72,8 @@ export interface PersonResponse {
 export interface PersonResponsePublic {
 	uid: string;
 	name: string;
-	birthDate: Date | null;
-	address: string | null;
+	birthDate?: Date | null;
+	addresses?: AddressResponse[] | null;
 	isActive: boolean;
 	createdByUserUid: string; //Quem criou o cadastro
 	createdAt: Date;
@@ -80,8 +83,8 @@ export interface PersonResponsePublic {
 // Tipo específico para busca (campos que você quer pesquisar)
 export interface SearchPersonParams {
 	name?: string;
-	document?: string;
-	email?: string;
+	document?: string | null;
+	email?: string | null;
 	phone?: string | null;
 	celPhone?: string | null;
 	orderBy?: 'name' | 'document' | 'email';
@@ -118,15 +121,15 @@ export interface PersonWithAddresses {
 	uid: string;
 	name: string;
 	birthDate: Date | null;
-	document: string;
-	email: string;
-	phone: string | null;
-	celPhone: string | null;
+	document?: string | null;
+	email?: string | null;
+	phone?: string | null;
+	celPhone?: string | null;
 	isActive: boolean;
 	createdByUserUid: string;
 	createdAt: Date;
 	updatedByUserUid: string;
 	updatedAt: Date;
-	addresses: AddressResponse[]; // Lista de endereços
-	primaryAddress?: AddressResponse; // Endereço principal (opcional)
+	addresses?: AddressResponse[] | null;
+	primaryAddress?: string | null; // uid do Endereço principal (opcional)
 }

@@ -96,7 +96,8 @@ export class DIContainer {
 
     static createAddressService(): AddressService {
         const addressRepository = this.getAddressRepository();
-        return new AddressService(addressRepository);
+        const personRepository = this.getPersonRepository();
+        return new AddressService(addressRepository, personRepository);
     }
 
     static createAddressController(): AddressController {

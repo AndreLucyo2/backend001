@@ -10,13 +10,13 @@ import {
 export interface IPersonRepository {
 	// Operações CRUD básicas
 	create(personData: CreatePersonData): Promise<PersonResponsePublic>;
-	
+
 	update(uid: string, personData: UpdatePersonData): Promise<PersonResponsePublic>;
-	
+
 	delete(uid: string): Promise<boolean>;
 
 	findByUid(uid: string): Promise<Person | null>;
-	
+
 	findByDocument(document: string): Promise<Person | null>;
 
 	findByEmail(email: string): Promise<Person | null>;
@@ -31,5 +31,7 @@ export interface IPersonRepository {
 
 	// Listar todos (sem dados sensíveis para resposta pública)
 	findAllPublic(): Promise<PersonResponsePublic[]>;
+
+	updatePrimaryAddress(personUid: string, addressUid: string): Promise<void>;
 
 }

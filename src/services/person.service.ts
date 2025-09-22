@@ -9,7 +9,7 @@ import {
 	PersonSearchResult
 } from '../types/person.types';
 import {
-	formatPhone,
+formatPhone,
 	formatCPF,
 	formatCNPJ,
 	validateCPF,
@@ -235,10 +235,11 @@ export class PersonService {
 			phone: person.phone,
 			celPhone: person.celPhone,
 			email: person.email,
-			//birthDate: person.birthDate,
-			//address: person.address,
+			birthDate: person.birthDate,
+			addresses: person.addresses,
 			isActive: person.isActive,
 			createdByUserUid: person.createdByUserUid,
+			updatedByUserUid: person.UpdateAddressData,
 			createdAt: person.createdAt,
 			updatedAt: person.updatedAt
 		};
@@ -248,8 +249,7 @@ export class PersonService {
 		return {
 			uid: person.uid,
 			name: person.name,
-			//birthDate: person.birthDate,
-			//address: person.address,
+
 			isActive: person.isActive,
 			createdByUserUid: person.createdByUserUid,
 			createdAt: person.createdAt,

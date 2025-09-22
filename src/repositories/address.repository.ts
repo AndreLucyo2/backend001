@@ -1,14 +1,14 @@
 import {
-    Address,
-    CreateAddressData,
-    UpdateAddressData
+	Address,
+	CreateAddressData,
+	UpdateAddressData
 } from "../types/address.types";
 import { Address as AddressModel } from '../models/address';
 import { IAddressRepository } from '../interfaces/IAddressRepository';
 import { Op } from 'sequelize';
 
 export class AddressRepository implements IAddressRepository {
-	
+
 	async create(addressData: CreateAddressData): Promise<Address> {
 		try {
 			// Se for o primeiro endereço da pessoa, automaticamente vira principal
@@ -16,12 +16,12 @@ export class AddressRepository implements IAddressRepository {
 			if (existingAddresses.length === 0) {
 				addressData.isPrimary = true;
 			}
-			
+
 			// Se está marcando como principal, desmarcar outros
 			if (addressData.isPrimary) {
 				await this.unsetOtherPrimaryAddresses(addressData.personUid);
 			}
-			
+
 			const addressModel = await AddressModel.create(addressData as any);
 			return this.mapToEntity(addressModel);
 		} catch (error: any) {
@@ -47,14 +47,14 @@ export class AddressRepository implements IAddressRepository {
 					await this.unsetOtherPrimaryAddresses(address.personUid, uid);
 				}
 			}
-			
+
 			await AddressModel.update(addressData, { where: { uid } });
-			
+
 			const updatedAddress = await this.findByUid(uid);
 			if (!updatedAddress) {
 				throw new Error('Address not found after update');
 			}
-			
+
 			return updatedAddress;
 		} catch (error: any) {
 			throw new Error(`Failed to update address: ${error.message}`);
@@ -65,14 +65,14 @@ export class AddressRepository implements IAddressRepository {
 		try {
 			const address = await this.findByUid(uid);
 			if (!address) return false;
-			
+
 			const deletedCount = await AddressModel.destroy({ where: { uid } });
-			
+
 			// Se deletou o endereço principal, definir outro como principal
 			if (address.isPrimary && deletedCount > 0) {
 				await this.setFirstAddressAsPrimary(address.personUid);
 			}
-			
+
 			return deletedCount > 0;
 		} catch (error: any) {
 			throw new Error(`Failed to delete address: ${error.message}`);
@@ -82,9 +82,9 @@ export class AddressRepository implements IAddressRepository {
 	async findByPersonUid(personUid: string): Promise<Address[]> {
 		try {
 			const addressModels = await AddressModel.findAll({
-				where: { 
+				where: {
 					personUid,
-					isActive: true 
+					isActive: true
 				},
 				order: [['isPrimary', 'DESC'], ['createdAt', 'ASC']] // Principal primeiro
 			});
@@ -97,10 +97,10 @@ export class AddressRepository implements IAddressRepository {
 	async findPrimaryByPersonUid(personUid: string): Promise<Address | null> {
 		try {
 			const addressModel = await AddressModel.findOne({
-				where: { 
+				where: {
 					personUid,
 					isPrimary: true,
-					isActive: true 
+					isActive: true
 				}
 			});
 			return addressModel ? this.mapToEntity(addressModel) : null;
@@ -109,28 +109,6 @@ export class AddressRepository implements IAddressRepository {
 		}
 	}
 
-	async setPrimaryAddress(personUid: string, addressUid: string): Promise<boolean> {
-		try {
-			// Verificar se o endereço pertence à pessoa
-			const address = await this.findByUid(addressUid);
-			if (!address || address.personUid !== personUid) {
-				throw new Error('Address not found or does not belong to person');
-			}
-			
-			// Desmarcar outros como principal
-			await this.unsetOtherPrimaryAddresses(personUid, addressUid);
-			
-			// Marcar este como principal
-			await AddressModel.update(
-				{ isPrimary: true },
-				{ where: { uid: addressUid } }
-			);
-			
-			return true;
-		} catch (error: any) {
-			throw new Error(`Failed to set primary address: ${error.message}`);
-		}
-	}
 
 	async deactivateAddress(uid: string, updatedByUserUid: string): Promise<boolean> {
 		const updateData: UpdateAddressData = {
@@ -138,17 +116,17 @@ export class AddressRepository implements IAddressRepository {
 			updatedByUserUid,
 			updatedAt: new Date()
 		};
-		
+
 		const address = await this.findByUid(uid);
 		if (!address) return false;
-		
+
 		await this.update(uid, updateData);
-		
+
 		// Se desativou o principal, definir outro como principal
 		if (address.isPrimary) {
 			await this.setFirstAddressAsPrimary(address.personUid);
 		}
-		
+
 		return true;
 	}
 
@@ -158,37 +136,72 @@ export class AddressRepository implements IAddressRepository {
 			updatedByUserUid,
 			updatedAt: new Date()
 		};
-		
+
 		await this.update(uid, updateData);
 		return true;
 	}
 
-	// Métodos auxiliares privados
-	private async unsetOtherPrimaryAddresses(personUid: string, exceptUid?: string): Promise<void> {
-		const whereClause: any = { 
-			personUid,
-			isPrimary: true 
-		};
-		
-		if (exceptUid) {
-			whereClause.uid = { [Op.ne]: exceptUid };
+	async setPrimaryAddress(personUid: string, addressUid: string): Promise<boolean> {
+		try {
+			// Verificar se o endereço pertence à pessoa
+			const address = await this.findByUid(addressUid);
+			if (!address || address.personUid !== personUid) {
+				throw new Error('Address not found or does not belong to person');
+			}
+
+			// Desmarcar outros como principal
+			await this.unsetOtherPrimaryAddresses(personUid, addressUid);
+
+			// Marcar este como principal
+			await AddressModel.update(
+				{ isPrimary: true },
+				{ where: { uid: addressUid } }
+			);
+			return true;
+
+		} catch (error: any) {
+			throw new Error(`Failed to set primary address: ${error.message}`);
 		}
-		
+	}
+
+	async unsetOtherPrimaryAddresses(personUid: string, exceptUid?: string): Promise<void> {
 		await AddressModel.update(
 			{ isPrimary: false },
-			{ where: whereClause }
+			{
+				where: {
+					personUid,
+					uid: { [Op.ne]: exceptUid },
+				},
+			}
 		);
 	}
 
+	// // Métodos auxiliares privados
+	// private async unsetOtherPrimaryAddresses(personUid: string, exceptUid?: string): Promise<void> {
+	// 	const whereClause: any = { 
+	// 		personUid,
+	// 		isPrimary: true 
+	// 	};
+
+	// 	if (exceptUid) {
+	// 		whereClause.uid = { [Op.ne]: exceptUid };
+	// 	}
+
+	// 	await AddressModel.update(
+	// 		{ isPrimary: false },
+	// 		{ where: whereClause }
+	// 	);
+	// }
+
 	private async setFirstAddressAsPrimary(personUid: string): Promise<void> {
 		const firstAddress = await AddressModel.findOne({
-			where: { 
+			where: {
 				personUid,
-				isActive: true 
+				isActive: true
 			},
 			order: [['createdAt', 'ASC']]
 		});
-		
+
 		if (firstAddress) {
 			await AddressModel.update(
 				{ isPrimary: true },
