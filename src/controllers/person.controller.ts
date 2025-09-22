@@ -22,15 +22,15 @@ export class PersonController {
 		create: [
 			body('name').notEmpty().trim(),
 			body('document').isLength({ min: 11, max: 14 }).isNumeric(),
-			//body('birthDate').optional().isISO8601(),
+			body('birthDate').optional().isISO8601(),
 			body('phone').optional().trim(),
 			body('celPhone').optional().trim(),
-			body('address').optional().trim(),
+			body('addresses').optional().trim(),
 		],
 		update: [
 			body('name').optional().trim(),
 			body('document').optional().isLength({ min: 11, max: 14 }).isNumeric(),
-			//body('birthDate').optional().isISO8601(),
+			body('birthDate').optional().isISO8601(),
 			body('phone').optional().trim(),
 			body('celPhone').optional().trim(),
 			body('address').optional().trim(),

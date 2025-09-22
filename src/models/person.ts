@@ -22,7 +22,7 @@ export class Person extends Model {
 	public updatedAt!: Date;
 
 	// Associações - definidas após inicialização
-	public addresses?: [AddressResponse]; // Será tipado corretamente após import do Address model
+	public addresses?: AddressResponse[]; // Será tipado corretamente após import do Address model
 	public primaryAddress?: string | null;
 
 }
